@@ -789,7 +789,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
   const { uri } = request.params;
   
   if (uri === 'nexify://status') {
-    const status = await toolHandlers.system_status();
+    const status = await toolHandlers.system_status({});
     return {
       contents: [
         {
@@ -802,7 +802,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
   }
   
   if (uri === 'nexify://tools') {
-    const tools = await toolHandlers.list_registered_tools();
+    const tools = await toolHandlers.list_registered_tools({});
     return {
       contents: [
         {
