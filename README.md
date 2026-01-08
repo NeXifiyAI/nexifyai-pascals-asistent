@@ -1,71 +1,254 @@
-<a href="https://chat.vercel.ai/">
-  <img alt="Next.js 14 and App Router-ready AI chatbot." src="app/(chat)/opengraph-image.png">
-  <h1 align="center">Chat SDK</h1>
-</a>
+# 🚀 NeXify AI MCP Server
 
-<p align="center">
-    Chat SDK is a free, open-source template built with Next.js and the AI SDK that helps you quickly build powerful chatbot applications.
-</p>
+**Supreme Autonomous General Intelligence - German Engineering Standards**
 
-<p align="center">
-  <a href="https://chat-sdk.dev"><strong>Read Docs</strong></a> ·
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#model-providers"><strong>Model Providers</strong></a> ·
-  <a href="#deploy-your-own"><strong>Deploy Your Own</strong></a> ·
-  <a href="#running-locally"><strong>Running locally</strong></a>
-</p>
-<br/>
+Ein vollständiger MCP (Model Context Protocol) Server für das NeXify AI Ökosystem mit:
+- Multi-AI Provider Routing (OpenAI, DeepSeek, OpenRouter, Hugging Face)
+- Qdrant Vector Database Integration (Dual-Brain Architecture)
+- Self-Extension Capabilities
+- Dynamic Tool Registration
+- GitHub Integration
 
-## Features
+## 🏗️ Architektur
 
-- [Next.js](https://nextjs.org) App Router
-  - Advanced routing for seamless navigation and performance
-  - React Server Components (RSCs) and Server Actions for server-side rendering and increased performance
-- [AI SDK](https://ai-sdk.dev/docs/introduction)
-  - Unified API for generating text, structured objects, and tool calls with LLMs
-  - Hooks for building dynamic chat and generative user interfaces
-  - Supports xAI (default), OpenAI, Fireworks, and other model providers
-- [shadcn/ui](https://ui.shadcn.com)
-  - Styling with [Tailwind CSS](https://tailwindcss.com)
-  - Component primitives from [Radix UI](https://radix-ui.com) for accessibility and flexibility
-- Data Persistence
-  - [Neon Serverless Postgres](https://vercel.com/marketplace/neon) for saving chat history and user data
-  - [Vercel Blob](https://vercel.com/storage/blob) for efficient file storage
-- [Auth.js](https://authjs.dev)
-  - Simple and secure authentication
-
-## Model Providers
-
-This template uses the [Vercel AI Gateway](https://vercel.com/docs/ai-gateway) to access multiple AI models through a unified interface. The default configuration includes [xAI](https://x.ai) models (`grok-2-vision-1212`, `grok-3-mini`) routed through the gateway.
-
-### AI Gateway Authentication
-
-**For Vercel deployments**: Authentication is handled automatically via OIDC tokens.
-
-**For non-Vercel deployments**: You need to provide an AI Gateway API key by setting the `AI_GATEWAY_API_KEY` environment variable in your `.env.local` file.
-
-With the [AI SDK](https://ai-sdk.dev/docs/introduction), you can also switch to direct LLM providers like [OpenAI](https://openai.com), [Anthropic](https://anthropic.com), [Cohere](https://cohere.com/), and [many more](https://ai-sdk.dev/providers/ai-sdk-providers) with just a few lines of code.
-
-## Deploy Your Own
-
-You can deploy your own version of the Next.js AI Chatbot to Vercel with one click:
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/templates/next.js/nextjs-ai-chatbot)
-
-## Running locally
-
-You will need to use the environment variables [defined in `.env.example`](.env.example) to run Next.js AI Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a `.env` file is all that is necessary.
-
-> Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various AI and authentication provider accounts.
-
-1. Install Vercel CLI: `npm i -g vercel`
-2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
-3. Download your environment variables: `vercel env pull`
-
-```bash
-pnpm install
-pnpm db:migrate # Setup database or apply latest database changes
-pnpm dev
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    NeXify AI MCP Server                     │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │   OpenAI    │  │  DeepSeek   │  │    OpenRouter       │  │
+│  │  GPT-4/4o   │  │   Coder     │  │  Claude/Llama/etc   │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+│                         ↓                                    │
+│  ┌───────────────────────────────────────────────────────┐  │
+│  │                  Smart Router                          │  │
+│  │     (Automatic Model Selection by Task Type)          │  │
+│  └───────────────────────────────────────────────────────┘  │
+│                         ↓                                    │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │   Qdrant    │  │   GitHub    │  │  Dynamic Tools      │  │
+│  │ Dual-Brain  │  │   Sync      │  │  Self-Extension     │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-Your app template should now be running on [localhost:3000](http://localhost:3000).
+## 📦 Installation
+
+```bash
+# Clone
+git clone https://github.com/NeXifiyAI/nexifyai-pascals-asistent.git
+cd nexifyai-pascals-asistent
+
+# Install dependencies
+npm install
+
+# Configure environment
+cp .env.example .env.local
+# Edit .env.local with your API keys
+
+# Development
+npm run dev
+
+# Build
+npm run build
+```
+
+## 🔧 Verfügbare Tools
+
+### AI Provider Tools
+| Tool | Beschreibung |
+|------|-------------|
+| `ask_openai` | GPT-4 Turbo für komplexe Reasoning-Tasks |
+| `ask_deepseek` | DeepSeek für Code-Generierung (kosteneffizient) |
+| `ask_openrouter` | Multi-Model Routing via OpenRouter |
+| `ask_huggingface` | Spezialisierte Hugging Face Modelle |
+| `smart_ask` | Automatische Modell-Auswahl nach Task-Typ |
+
+### Qdrant Vector Database
+| Tool | Beschreibung |
+|------|-------------|
+| `qdrant_search` | Semantische Suche in einer Collection |
+| `qdrant_upsert` | Vektoren einfügen/aktualisieren |
+| `qdrant_list_collections` | Alle Collections auflisten |
+| `qdrant_create_collection` | Neue Collection erstellen |
+| `qdrant_multi_search` | Dual-Brain Suche über mehrere Collections |
+
+### GitHub Tools
+| Tool | Beschreibung |
+|------|-------------|
+| `github_get_file` | Datei aus Repository lesen |
+| `github_update_file` | Datei erstellen/aktualisieren |
+| `github_list_files` | Dateien im Repository auflisten |
+
+### Self-Extension Tools
+| Tool | Beschreibung |
+|------|-------------|
+| `register_tool` | Neues Tool dynamisch registrieren |
+| `list_tools` | Alle Tools auflisten |
+| `remove_tool` | Dynamisches Tool entfernen |
+| `add_api_integration` | Neue API-Integration hinzufügen |
+
+### Code & Knowledge Tools
+| Tool | Beschreibung |
+|------|-------------|
+| `generate_code` | Code generieren (verwendet DeepSeek Coder) |
+| `analyze_code` | Code analysieren (Bugs, Security, Performance) |
+| `store_knowledge` | Wissen in Dual-Brain speichern |
+| `query_knowledge` | Wissensbasis durchsuchen |
+
+### System Tools
+| Tool | Beschreibung |
+|------|-------------|
+| `system_status` | System-Status und Health Metrics |
+| `ask_nexify_master` | Haupt-Endpoint für NeXify AI Queries |
+
+## 🌐 API Endpoints
+
+### HTTP API (Vercel)
+
+```bash
+# Server Info
+GET /api/mcp
+
+# List all tools
+GET /api/mcp/tools
+
+# System status
+GET /api/mcp/status
+
+# Call a tool
+POST /api/mcp/call
+Content-Type: application/json
+{
+  "tool": "ask_openai",
+  "arguments": {
+    "prompt": "What is quantum computing?"
+  }
+}
+
+# MCP Protocol (JSON-RPC style)
+POST /api/mcp
+Content-Type: application/json
+{
+  "method": "tools/call",
+  "params": {
+    "name": "ask_nexify_master",
+    "arguments": {
+      "query": "Explain the architecture"
+    }
+  }
+}
+```
+
+## 🔐 Authentifizierung
+
+Optional Bearer Token Authentication:
+
+```bash
+curl -X POST https://your-domain.vercel.app/api/mcp/call \
+  -H "Authorization: Bearer YOUR_AUTH_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"tool": "system_status", "arguments": {}}'
+```
+
+## 🧠 Dual-Brain Architecture
+
+Der Server implementiert die Dual-Brain Architektur:
+
+1. **Fast Path (OpenAI Vector Store)**: Für schnelle Queries (<5s)
+2. **Deep Path (Qdrant Multi-Collection)**: Für tiefe Analyse
+3. **Combined**: Beide für Decision-Making
+
+```typescript
+// Beispiel: Multi-Collection Search
+await toolHandlers.qdrant_multi_search({
+  query: "How to implement RAG?",
+  collections: ["semantic_memory", "episodic_memory", "procedural_memory"],
+  limit: 3
+});
+```
+
+## 🔧 Self-Extension Beispiel
+
+```typescript
+// Neues Tool registrieren
+await toolHandlers.register_tool({
+  name: "custom_calculator",
+  description: "Simple calculator",
+  inputSchema: {
+    type: "object",
+    properties: {
+      a: { type: "number" },
+      b: { type: "number" },
+      op: { type: "string" }
+    },
+    required: ["a", "b", "op"]
+  },
+  handler_code: `
+    const { a, b, op } = args;
+    switch(op) {
+      case '+': return a + b;
+      case '-': return a - b;
+      case '*': return a * b;
+      case '/': return a / b;
+      default: return 'Unknown operation';
+    }
+  `
+});
+```
+
+## 🔌 Neue API Integration hinzufügen
+
+```typescript
+await toolHandlers.add_api_integration({
+  name: "weather",
+  base_url: "https://api.weather.com",
+  api_key: "your-weather-api-key",
+  endpoints: [
+    {
+      name: "current",
+      method: "GET",
+      path: "/v1/current",
+      description: "Get current weather"
+    },
+    {
+      name: "forecast",
+      method: "GET",
+      path: "/v1/forecast",
+      description: "Get weather forecast"
+    }
+  ]
+});
+
+// Dann verwendbar als:
+await toolHandlers.weather_current({ params: { city: "Berlin" } });
+```
+
+## 📊 Environment Variables
+
+| Variable | Beschreibung |
+|----------|-------------|
+| `OPENAI_API_KEY` | OpenAI API Key |
+| `OPENROUTER_API_KEY` | OpenRouter API Key |
+| `DEEPSEEK_API_KEY` | DeepSeek API Key |
+| `HUGGINGFACE_API_KEY` | Hugging Face API Key |
+| `QDRANT_URL` | Qdrant Cluster URL |
+| `QDRANT_API_KEY` | Qdrant API Key |
+| `GITHUB_TOKEN` | GitHub Personal Access Token |
+| `AUTH_SECRET` | Optional: Bearer Token für API-Auth |
+
+## 🚀 Deployment auf Vercel
+
+1. Push zu GitHub
+2. Import in Vercel
+3. Environment Variables in Vercel Dashboard setzen
+4. Deploy!
+
+```bash
+# Oder via CLI
+vercel --prod
+```
+
+## 📝 License
+
+MIT License - NeXify AI 2026
