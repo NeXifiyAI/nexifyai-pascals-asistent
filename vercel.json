@@ -1,21 +1,8 @@
 {
-  "version": 2,
-  "buildCommand": "npm run vercel-build",
-  "installCommand": "npm install",
-  "framework": null,
   "functions": {
-    "api/**/*.ts": {
+    "app/api/**/*.ts": {
       "maxDuration": 60
     }
   },
-  "routes": [
-    {
-      "src": "/api/mcp(.*)",
-      "dest": "/api/mcp.ts"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/api/mcp.ts"
-    }
-  ]
+  "rewrites": []
 }
