@@ -1,0 +1,40 @@
+name: E2E Tests
+
+on:
+  deployment_status:
+
+jobs:
+  e2e:
+    if: github.event.deployment_status.state == 'success' && github.event.deployment_status.environment != 'production'
+    name: 🎭 Playwright E2E
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⎔ Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: ⎔ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🎭 Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
+
+      - name: 🧪 Run E2E Tests against Vercel Preview
+        env:
+          BASE_URL: ${{ github.event.deployment_status.target_url }}
+          # Secrets needed for E2E tests
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          QDRANT_URL: ${{ secrets.QDRANT_URL }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
+        run: pnpm test:e2e
