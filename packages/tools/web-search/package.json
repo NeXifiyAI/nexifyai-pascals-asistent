@@ -1,7 +1,7 @@
 {
-  "name": "ai-sdk-tool-as-package-template",
-  "version": "0.0.1",
-  "description": "AI SDK tool package template",
+  "name": "@nexify/tool-web-search",
+  "version": "1.0.0",
+  "description": "Web search tool for NeXify AI",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -27,7 +27,7 @@
   ],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.8.0",
+  "packageManager": "pnpm@9.0.0",
   "devDependencies": {
     "@types/node": "^24.10.1",
     "dotenv": "^17.2.3",
@@ -36,7 +36,7 @@
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
-    "ai": "^5.0.0",
-    "zod": "^4.0.0"
+    "ai": "^4.0.0 || ^5.0.0 || ^6.0.0",
+    "zod": "^3.0.0"
   }
 }

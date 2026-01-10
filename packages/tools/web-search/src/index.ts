@@ -1,1 +1,6 @@
-export { getWeather } from "./tools/weather";
+export {
+  searchWeb,
+  searchWebSchema,
+  searchWebDescription,
+  searchWebExecute,
+} from "./tools/search";

@@ -1,1 +1,10 @@
-export { getWeather } from "./tools/weather";
+export {
+  storeKnowledge,
+  storeKnowledgeSchema,
+  storeKnowledgeDescription,
+  storeKnowledgeExecute,
+  queryKnowledge,
+  queryKnowledgeSchema,
+  queryKnowledgeDescription,
+  queryKnowledgeExecute,
+} from "./tools/memory";

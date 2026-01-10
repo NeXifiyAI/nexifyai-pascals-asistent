@@ -47,3 +47,5 @@ nexifyai_deploy_key.pub
 .yarn/
 .pnp.*
 
+nexify-ai-assietenten-api-keys.txt
+.turbo/

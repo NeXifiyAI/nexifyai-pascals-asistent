@@ -1,0 +1,41 @@
+# CodeRabbit Configuration File
+# Documentation: https://coderabbit.ai/docs
+
+version: "0.1"
+
+chat:
+  context:
+    # Files to exclude from the chat context
+    exclude:
+      - "**/pnpm-lock.yaml"
+      - "**/*.lock"
+      - "**/dist/**"
+      - "**/node_modules/**"
+      - "**/.next/**"
+
+reviews:
+  # Enable high-level summary
+  high_level_summary: true
+
+  # Enable line-level comments
+  review_status: true
+
+  # Enable auto-review for all PRs
+  auto_review:
+    enabled: true
+    drafts: false
+
+  # Patterns to exclude from review
+  exclude:
+    - "**/pnpm-lock.yaml"
+    - "**/*.lock"
+    - "**/dist/**"
+    - "**/node_modules/**"
+    - "**/.next/**"
+    - "**/*.min.js"
+    - "**/*.svg"
+
+  # Bot behavior settings
+  bot:
+    ignore_wip: true
+    tone: "professional" # professional, friendly, empathetic
