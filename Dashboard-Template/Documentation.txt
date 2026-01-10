@@ -1,0 +1,3 @@
+Font Used in UI Kit :
+
+1. Inter : https://fonts.google.com/specimen/Inter
