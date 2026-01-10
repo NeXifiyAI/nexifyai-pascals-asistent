@@ -1,8 +1,7 @@
 {
   "functions": {
-    "apps/dashboard/api/**/*.ts": {
+    "apps/dashboard/app/api/**/*.ts": {
       "maxDuration": 60
     }
-  },
-  "rewrites": []
+  }
 }
