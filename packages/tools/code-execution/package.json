@@ -1,0 +1,32 @@
+{
+  "name": "@nexify/tool-code-execution",
+  "version": "1.0.0",
+  "description": "Code execution tool for NeXify AI",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts",
+    "test": "tsx --env-file=.env src/test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "ai": "^4.1.0",
+    "zod": "^3.23.0"
+  }
+}
