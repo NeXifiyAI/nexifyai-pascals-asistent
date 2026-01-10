@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": ["-y", "@supabase/mcp-server"],
+      "env": {
+        "SUPABASE_URL": "https://cwebcfgdraghzeqgfsty.supabase.co",
+        "SUPABASE_SERVICE_ROLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3ZWJjZmdkcmFnaHplcWdmc3R5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwNzMyNzUsImV4cCI6MjA4MzY0OTI3NX0.TiT-oXQ36eqdsR-OyBxpYs7kWfm2AXrNZbgQe_11RAs"
+      }
+    },
+    "supabase-web": {
+      "url": "https://mcp.supabase.com/mcp?project_ref=cwebcfgdraghzeqgfsty&features=docs,account,database,development,debugging,functions,branching,storage"
+    }
+  }
+}

@@ -1,14 +1,7 @@
 import OpenAI from "openai";
-import { QdrantClient } from "@qdrant/js-client-rest";
+import { getBrainLoader } from "@/lib/brain/supabase-loader";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-const qdrantClient = new QdrantClient({
-  url: process.env.QDRANT_URL!,
-  apiKey: process.env.QDRANT_API_KEY!,
-});
-
-const COLLECTION_NAME = "brain_memory";
 
 // AI Route Handler
 export async function handleAiRoute(args: any) {
@@ -77,88 +70,96 @@ export async function handleCodeAnalyze(args: any) {
   };
 }
 
-// Knowledge Store Handler
+// Knowledge Store Handler - NOW WITH SUPABASE
 export async function handleKnowledgeStore(args: any) {
   const { content, category, tags = [], is_active = true } = args;
 
-  // Generate embedding
-  const embedding = await openai.embeddings.create({
-    model: "text-embedding-3-small",
-    input: content,
-  });
+  try {
+    // Generate embedding
+    const embedding = await openai.embeddings.create({
+      model: "text-embedding-ada-002",
+      input: content,
+    });
 
-  const vector = embedding.data[0].embedding;
-  const id = `mem-${Date.now()}`;
+    const vector = embedding.data[0].embedding;
 
-  // Map category to type
-  const typeMap: Record<string, string> = {
-    facts: "fact",
-    code: "code",
-    conversations: "conversation",
-    preferences: "preference",
-  };
+    // Map category to type
+    const typeMap: Record<string, string> = {
+      facts: "knowledge",
+      code: "code_snippet",
+      conversations: "conversation",
+      preferences: "preference",
+    };
 
-  // Store in Qdrant
-  await qdrantClient.upsert(COLLECTION_NAME, {
-    points: [
-      {
-        id,
-        vector,
-        payload: {
-          content,
-          type: typeMap[category] || "fact",
-          is_active,
-          tags,
-          timestamp: Date.now(),
-          source: "user",
-        },
-      },
-    ],
-  });
+    // Store in Supabase
+    const brainLoader = getBrainLoader("nexify-ai");
+    const id = await brainLoader.addMemory(content, {
+      type: (typeMap[category] || "knowledge") as any,
+      scope: "project",
+      importance: "medium",
+      tags,
+      autoLoad: false,
+      embedding: vector,
+    });
 
-  return {
-    stored: true,
-    id,
-    category,
-    message: `Stored in ${COLLECTION_NAME}`,
-  };
+    return {
+      stored: true,
+      id,
+      category,
+      message: `Stored in Supabase Brain`,
+    };
+  } catch (error) {
+    console.error("Knowledge store error:", error);
+    return {
+      stored: false,
+      error: String(error),
+      message: "Failed to store in Supabase Brain",
+    };
+  }
 }
 
-// Knowledge Query Handler
+// Knowledge Query Handler - NOW WITH SUPABASE
 export async function handleKnowledgeQuery(args: any) {
   const { query, category, limit = 5 } = args;
 
-  // Generate query embedding
-  const embedding = await openai.embeddings.create({
-    model: "text-embedding-3-small",
-    input: query,
-  });
+  try {
+    // Generate query embedding
+    const embedding = await openai.embeddings.create({
+      model: "text-embedding-ada-002",
+      input: query,
+    });
 
-  const vector = embedding.data[0].embedding;
+    const vector = embedding.data[0].embedding;
 
-  // Search in Qdrant
-  const searchResult = await qdrantClient.search(COLLECTION_NAME, {
-    vector,
-    limit,
-    with_payload: true,
-    filter: category
-      ? {
-          must: [{ key: "type", match: { value: category } }],
-        }
-      : undefined,
-  });
+    // Search in Supabase
+    const brainLoader = getBrainLoader("nexify-ai");
+    const searchResults = await brainLoader.searchMemories(vector, {
+      limit,
+      threshold: 0.6,
+      type: category || undefined,
+    });
 
-  const results = searchResult.map((hit: any) => ({
-    content: hit.payload?.content,
-    type: hit.payload?.type,
-    score: hit.score,
-    tags: hit.payload?.tags || [],
-  }));
+    const results = searchResults.map((memory) => ({
+      content: memory.content,
+      type: memory.type,
+      score: memory.similarity || 0,
+      tags: memory.tags || [],
+    }));
 
-  return {
-    results,
-    count: results.length,
-  };
+    return {
+      results,
+      count: results.length,
+      source: "supabase",
+    };
+  } catch (error) {
+    console.error("Knowledge query error:", error);
+    return {
+      results: [],
+      count: 0,
+      error: String(error),
+      source: "supabase",
+    };
+  }
 }
 
 // Web Search Handler (Placeholder)
@@ -173,13 +174,14 @@ export async function handleWebSearch(args: any) {
   };
 }
 
-// System Status Handler
+// System Status Handler - NOW WITH SUPABASE
 export async function handleSystemStatus() {
   const status = {
     openai: !!process.env.OPENAI_API_KEY,
-    qdrant: !!process.env.QDRANT_URL && !!process.env.QDRANT_API_KEY,
+    supabase:
+      !!process.env.SUPABASE_URL && !!process.env.SUPABASE_SERVICE_ROLE_KEY,
     timestamp: new Date().toISOString(),
   };
 
-  return { status, healthy: status.openai && status.qdrant };
+  return { status, healthy: status.openai && status.supabase };
 }

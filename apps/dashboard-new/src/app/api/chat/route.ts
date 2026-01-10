@@ -1,6 +1,6 @@
 import { deepseek } from "@ai-sdk/deepseek";
 import { streamText, tool } from "ai";
-import { loadBrainContext } from "@/lib/brain/loader";
+import { getBrainLoader } from "@/lib/brain/supabase-loader";
 import {
   handleCodeGenerate,
   handleCodeAnalyze,
@@ -14,7 +14,7 @@ Betrieben mit DeepSeek für überlegene Effizienz und Kosteneffektivität.
 
 ## Deine Kernfähigkeiten:
 - Code schreiben & analysieren in allen Programmiersprachen
-- Wissen speichern & abrufen aus Pascals Brain (Qdrant Vector Database)
+- Wissen speichern & abrufen aus Pascals Brain (Supabase PostgreSQL + pgvector)
 - Datenanalyse: Daten verarbeiten und analysieren
 - Kreatives Schreiben: Texte, E-Mails, Dokumente erstellen
 
@@ -61,13 +61,36 @@ Du MUSST deine Tools bei JEDER relevanten Anfrage nutzen!
 - Erwähne bei Bedarf dass du mit DeepSeek betrieben wirst
 
 ## Dein Wissen:
-Du hast Zugriff auf Pascals Brain - eine Qdrant-Datenbank mit 57.000+ Embeddings über seine Projekte, Präferenzen und Wissen.
+Du hast Zugriff auf Pascals Brain - eine Supabase PostgreSQL Datenbank mit pgvector für semantische Suche.
+Features: Zwangsladung (auto_load), Realtime Updates, Error Tracking, Learned Patterns.
 
 REGEL: Wenn der User nach deinen "Zugriffen" oder "Tools" fragt, nutze sie SOFORT um zu beweisen dass sie funktionieren!
 `;
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
+
+// Helper: Embedding generieren via OpenAI
+async function generateEmbedding(text: string): Promise<number[]> {
+  const response = await fetch("https://api.openai.com/v1/embeddings", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({
+      input: text,
+      model: "text-embedding-ada-002",
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`OpenAI Embedding Error: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.data[0].embedding;
+}
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
@@ -77,9 +100,43 @@ export async function POST(req: Request) {
   let brainContext = "";
 
   try {
-    brainContext = await loadBrainContext(lastUserMessage);
+    const brainLoader = getBrainLoader("nexify-ai");
+
+    // Mandatory context laden (immer)
+    const mandatory = await brainLoader.getMandatoryContext();
+
+    // Semantische Suche nur wenn Supabase konfiguriert ist
+    let relevant: any[] = [];
+    if (process.env.OPENAI_API_KEY) {
+      try {
+        const embedding = await generateEmbedding(lastUserMessage);
+        relevant = await brainLoader.searchMemories(embedding, {
+          limit: 5,
+          threshold: 0.7,
+        });
+      } catch (embeddingError) {
+        console.warn(
+          "Embedding generation failed, using mandatory only:",
+          embeddingError,
+        );
+      }
+    }
+
+    // Context formatieren
+    const context = brainLoader.formatContextForPrompt({
+      mandatory,
+      relevant,
+      errors: [],
+      total_tokens_estimate: 0,
+      loaded_at: new Date().toISOString(),
+    });
+
+    brainContext = context;
+    console.log(
+      `Brain: ${mandatory.length} mandatory + ${relevant.length} relevant memories loaded`,
+    );
   } catch (e) {
-    console.error("Failed to load brain context", e);
+    console.error("Failed to load brain context:", e);
   }
 
   const systemPromptWithBrain = brainContext
