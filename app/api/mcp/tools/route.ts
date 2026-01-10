@@ -79,6 +79,17 @@ const TOOLS = [
     }
   },
   {
+    name: 'ask_legacy_assistant',
+    description: 'Ask the legacy OpenAI Assistant (access to old vector stores/files)',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        question: { type: 'string', description: 'Question for the legacy assistant' }
+      },
+      required: ['question']
+    }
+  },
+  {
     name: 'register_tool',
     description: 'Register a new tool dynamically (self-extension)',
     inputSchema: {
