@@ -1,0 +1,47 @@
+# ============================================================
+# NEXIFY AI - DOCKER IGNORE
+# Weniger kopieren = schnellere Builds
+# ============================================================
+
+# Dependencies (werden im Container installiert)
+node_modules
+.pnpm-store
+
+# Build outputs
+.next
+out
+dist
+build
+
+# Development
+.env*.local
+.env.development
+*.log
+npm-debug.log*
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Testing
+coverage
+.nyc_output
+
+# Docs (nicht nötig im Container)
+*.md
+LICENSE
+docs/
+
+# Misc
+*.tgz
+.turbo

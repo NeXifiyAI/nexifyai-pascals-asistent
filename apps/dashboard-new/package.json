@@ -11,7 +11,13 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "docker:dev": "docker-compose up -d app",
+    "docker:stop": "docker-compose down",
+    "docker:build": "docker build -t nexify-ai:latest .",
+    "deploy": "pnpm dlx vercel --prod"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^0.1.0",
@@ -87,6 +93,7 @@
     "zustand": "^5.0.2"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@types/node": "22.10.2",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",

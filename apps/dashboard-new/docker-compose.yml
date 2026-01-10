@@ -1,0 +1,99 @@
+# ============================================================
+# NEXIFY AI - DOCKER COMPOSE
+# Complete development environment
+# ============================================================
+
+services:
+  # ==========================================================
+  # MAIN APPLICATION (Next.js)
+  # ==========================================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: nexify-app
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount source for hot-reload (exclude node_modules)
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+    depends_on:
+      - biome
+    networks:
+      - nexify-network
+    restart: unless-stopped
+
+  # ==========================================================
+  # BIOME - Linting & Formatting
+  # ==========================================================
+  biome:
+    image: node:20-alpine
+    container_name: nexify-biome
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: >
+      sh -c "
+        corepack enable &&
+        corepack prepare pnpm@latest --activate &&
+        pnpm add -D @biomejs/biome &&
+        echo 'Biome ready. Run: docker-compose exec biome pnpm biome check .'
+      "
+    networks:
+      - nexify-network
+
+  # ==========================================================
+  # SUPABASE LOCAL (Optional - for offline development)
+  # ==========================================================
+  supabase-db:
+    image: supabase/postgres:15.1.1.61
+    container_name: nexify-supabase-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nexify
+    volumes:
+      - supabase-data:/var/lib/postgresql/data
+      - ./supabase/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    networks:
+      - nexify-network
+    profiles:
+      - local-db # Only starts with: docker-compose --profile local-db up
+
+  # ==========================================================
+  # REDIS (Optional - for caching)
+  # ==========================================================
+  redis:
+    image: redis:7-alpine
+    container_name: nexify-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - nexify-network
+    profiles:
+      - cache # Only starts with: docker-compose --profile cache up
+
+# ==========================================================
+# NETWORKS & VOLUMES
+# ==========================================================
+networks:
+  nexify-network:
+    driver: bridge
+
+volumes:
+  supabase-data:
+  redis-data:
