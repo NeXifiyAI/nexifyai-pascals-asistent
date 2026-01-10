@@ -1,6 +1,17 @@
 "use client";
 
-import type { ChatStatus, FileUIPart } from "ai";
+// Define custom types locally
+type ChatStatus = "idle" | "awaiting-input" | "streaming" | "error" | "submitted";
+
+type FileUIPart = {
+  type: "file-ui";
+  name?: string;
+  filename?: string;
+  mimeType?: string;
+  mediaType?: string;
+  size?: number;
+  url?: string;
+};
 import {
   CornerDownLeftIcon,
   ImageIcon,
@@ -167,7 +178,7 @@ export function PromptInputProvider({
       prev.concat(
         incoming.map((file) => ({
           id: nanoid(),
-          type: "file" as const,
+          type: "file-ui" as const,
           url: URL.createObjectURL(file),
           mediaType: file.type,
           filename: file.name,
@@ -420,7 +431,7 @@ export const PromptInputActionAddAttachments = ({
   return (
     <DropdownMenuItem
       {...props}
-      onSelect={(e) => {
+      onSelect={(e: Event) => {
         e.preventDefault();
         attachments.openFileDialog();
       }}
@@ -552,7 +563,7 @@ export const PromptInput = ({
         for (const file of capped) {
           next.push({
             id: nanoid(),
-            type: "file",
+            type: "file-ui",
             url: URL.createObjectURL(file),
             mediaType: file.type,
             filename: file.name,

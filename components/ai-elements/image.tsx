@@ -4,12 +4,15 @@ import { cn } from "@/lib/utils";
 export type ImageProps = Experimental_GeneratedImage & {
   className?: string;
   alt?: string;
+  mediaType?: string;
+  base64?: string;
+  uint8Array?: Uint8Array;
 };
 
 export const Image = ({
   base64,
   uint8Array,
-  mediaType,
+  mediaType = "image/png",
   ...props
 }: ImageProps) => (
   // biome-ignore lint/nursery/useImageSize: dynamic base64 content

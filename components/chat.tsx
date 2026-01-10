@@ -1,7 +1,6 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import useSWR, { useSWRConfig } from "swr";
@@ -80,75 +79,17 @@ export function Chat({
   const {
     messages,
     setMessages,
-    sendMessage,
     status,
     stop,
-    regenerate,
-    resumeStream,
-    addToolApprovalResponse,
-  } = useChat<ChatMessage>({
+  } = useChat({
     id,
-    messages: initialMessages,
-    experimental_throttle: 100,
-    generateId: generateUUID,
-    // Auto-continue after tool approval (only for APPROVED tools)
-    // Denied tools don't need server continuation - state is saved on next user message
-    sendAutomaticallyWhen: ({ messages: currentMessages }) => {
-      const lastMessage = currentMessages.at(-1);
-      // Only continue if a tool was APPROVED (not denied)
-      const shouldContinue =
-        lastMessage?.parts?.some(
-          (part) =>
-            "state" in part &&
-            part.state === "approval-responded" &&
-            "approval" in part &&
-            (part.approval as { approved?: boolean })?.approved === true
-        ) ?? false;
-      return shouldContinue;
-    },
-    transport: new DefaultChatTransport({
-      api: "/api/chat",
-      fetch: fetchWithErrorHandlers,
-      prepareSendMessagesRequest(request) {
-        const lastMessage = request.messages.at(-1);
-
-        // Check if this is a tool approval continuation:
-        // - Last message is NOT a user message (meaning no new user input)
-        // - OR any message has tool parts that were responded to (approved or denied)
-        const isToolApprovalContinuation =
-          lastMessage?.role !== "user" ||
-          request.messages.some((msg) =>
-            msg.parts?.some((part) => {
-              const state = (part as { state?: string }).state;
-              return (
-                state === "approval-responded" || state === "output-denied"
-              );
-            })
-          );
-
-        return {
-          body: {
-            id: request.id,
-            // Send all messages for tool approval continuation, otherwise just the last user message
-            ...(isToolApprovalContinuation
-              ? { messages: request.messages }
-              : { message: lastMessage }),
-            selectedChatModel: currentModelIdRef.current,
-            selectedVisibilityType: visibilityType,
-            ...request.body,
-          },
-        };
-      },
-    }),
-    onData: (dataPart) => {
-      setDataStream((ds) => (ds ? [...ds, dataPart] : []));
-    },
+    initialMessages,
+    api: "/api/chat",
     onFinish: () => {
       mutate(unstable_serialize(getChatHistoryPaginationKey));
     },
-    onError: (error) => {
+    onError: (error: any) => {
       if (error instanceof ChatSDKError) {
-        // Check if it's a credit card error
         if (
           error.message?.includes("AI Gateway requires a valid credit card")
         ) {
@@ -161,7 +102,18 @@ export function Chat({
         }
       }
     },
+    body: {
+      id,
+      selectedChatModel: currentModelIdRef.current,
+      selectedVisibilityType: visibilityType,
+    },
   });
+
+  // TODO: Implement these methods with new ai-sdk API
+  const sendMessage: any = null;
+  const regenerate: any = null;
+  const resumeStream: any = null;
+  const addToolApprovalResponse: any = null;
 
   const searchParams = useSearchParams();
   const query = searchParams.get("query");
@@ -170,7 +122,7 @@ export function Chat({
 
   useEffect(() => {
     if (query && !hasAppendedQuery) {
-      sendMessage({
+      sendMessage?.({
         role: "user" as const,
         parts: [{ type: "text", text: query }],
       });

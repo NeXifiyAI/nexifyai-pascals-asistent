@@ -1,4 +1,4 @@
-import type { UseChatHelpers } from "@ai-sdk/react";
+import type { ExtendedUseChatHelpers as UseChatHelpers } from "@/lib/ai-sdk-compat";
 import equal from "fast-deep-equal";
 import { AnimatePresence, motion } from "framer-motion";
 import { memo } from "react";
@@ -9,13 +9,13 @@ import type { UIArtifact } from "./artifact";
 import { PreviewMessage, ThinkingMessage } from "./message";
 
 type ArtifactMessagesProps = {
-  addToolApprovalResponse: UseChatHelpers<ChatMessage>["addToolApprovalResponse"];
+  addToolApprovalResponse: any; // TODO: Update to new ai-sdk API
   chatId: string;
-  status: UseChatHelpers<ChatMessage>["status"];
+  status: UseChatHelpers["status"];
   votes: Vote[] | undefined;
   messages: ChatMessage[];
-  setMessages: UseChatHelpers<ChatMessage>["setMessages"];
-  regenerate: UseChatHelpers<ChatMessage>["regenerate"];
+  setMessages: UseChatHelpers["setMessages"];
+  regenerate: any; // TODO: Update to new ai-sdk API
   isReadonly: boolean;
   artifactStatus: UIArtifact["status"];
 };
@@ -70,7 +70,7 @@ function PureArtifactMessages({
         {status === "submitted" &&
           !messages.some((msg) =>
             msg.parts?.some(
-              (part) => "state" in part && part.state === "approval-responded"
+              (part: any) => "state" in part && part.state === "approval-responded"
             )
           ) && <ThinkingMessage key="thinking" />}
       </AnimatePresence>

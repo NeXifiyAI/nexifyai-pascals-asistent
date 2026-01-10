@@ -1,6 +1,5 @@
 "use client";
 
-import type { ToolUIPart } from "ai";
 import {
   type ComponentProps,
   createContext,
@@ -10,6 +9,21 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
+// Define ToolUIPart type locally since it's not exported from ai
+type ToolUIPartState = 
+  | "input-streaming"
+  | "input-available"
+  | "approval-requested"
+  | "approval-responded"
+  | "output-denied"
+  | "output-available";
+
+type ToolUIPart = {
+  type: "tool-ui";
+  state: ToolUIPartState;
+  content?: ReactNode;
+};
 
 type ToolUIPartApproval =
   | {

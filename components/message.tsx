@@ -1,5 +1,5 @@
 "use client";
-import type { UseChatHelpers } from "@ai-sdk/react";
+import type { ExtendedUseChatHelpers as UseChatHelpers } from "@/lib/ai-sdk-compat";
 import equal from "fast-deep-equal";
 import { memo, useState } from "react";
 import type { Vote } from "@/lib/db/schema";
@@ -35,21 +35,21 @@ const PurePreviewMessage = ({
   isReadonly,
   requiresScrollPadding: _requiresScrollPadding,
 }: {
-  addToolApprovalResponse: UseChatHelpers<ChatMessage>["addToolApprovalResponse"];
+  addToolApprovalResponse: UseChatHelpers["addToolApprovalResponse"];
   chatId: string;
   message: ChatMessage;
   vote: Vote | undefined;
   isLoading: boolean;
-  setMessages: UseChatHelpers<ChatMessage>["setMessages"];
-  regenerate: UseChatHelpers<ChatMessage>["regenerate"];
+  setMessages: UseChatHelpers["setMessages"];
+  regenerate: UseChatHelpers["regenerate"];
   isReadonly: boolean;
   requiresScrollPadding: boolean;
 }) => {
   const [mode, setMode] = useState<"view" | "edit">("view");
 
-  const attachmentsFromMessage = message.parts.filter(
-    (part) => part.type === "file"
-  );
+  const attachmentsFromMessage = message.parts?.filter(
+    (part: any) => part.type === "file"
+  ) || [];
 
   useDataStream();
 
@@ -74,14 +74,14 @@ const PurePreviewMessage = ({
         <div
           className={cn("flex flex-col", {
             "gap-2 md:gap-4": message.parts?.some(
-              (p) => p.type === "text" && p.text?.trim()
+              (p: any) => p.type === "text" && p.text?.trim()
             ),
             "w-full":
               (message.role === "assistant" &&
                 (message.parts?.some(
-                  (p) => p.type === "text" && p.text?.trim()
+                  (p: any) => p.type === "text" && p.text?.trim()
                 ) ||
-                  message.parts?.some((p) => p.type.startsWith("tool-")))) ||
+                  message.parts?.some((p: any) => p.type.startsWith("tool-")))) ||
               mode === "edit",
             "max-w-[calc(100%-2.5rem)] sm:max-w-[min(fit-content,80%)]":
               message.role === "user" && mode !== "edit",
@@ -92,7 +92,7 @@ const PurePreviewMessage = ({
               className="flex flex-row justify-end gap-2"
               data-testid={"message-attachments"}
             >
-              {attachmentsFromMessage.map((attachment) => (
+              {attachmentsFromMessage.map((attachment: any) => (
                 <PreviewAttachment
                   attachment={{
                     name: attachment.filename ?? "file",
@@ -105,7 +105,7 @@ const PurePreviewMessage = ({
             </div>
           )}
 
-          {message.parts?.map((part, index) => {
+          {message.parts?.map((part: any, index: any) => {
             const { type } = part;
             const key = `message-${message.id}-part-${index}`;
 
@@ -228,7 +228,7 @@ const PurePreviewMessage = ({
                           <button
                             className="rounded-md px-3 py-1.5 text-muted-foreground text-sm transition-colors hover:bg-muted hover:text-foreground"
                             onClick={() => {
-                              addToolApprovalResponse({
+                              addToolApprovalResponse?.({
                                 id: approvalId,
                                 approved: false,
                                 reason: "User denied weather lookup",
@@ -241,7 +241,7 @@ const PurePreviewMessage = ({
                           <button
                             className="rounded-md bg-primary px-3 py-1.5 text-primary-foreground text-sm transition-colors hover:bg-primary/90"
                             onClick={() => {
-                              addToolApprovalResponse({
+                              addToolApprovalResponse?.({
                                 id: approvalId,
                                 approved: true,
                               });

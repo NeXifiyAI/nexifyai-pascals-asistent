@@ -1,6 +1,24 @@
 "use client";
 
-import type { ToolUIPart } from "ai";
+// Define ToolUIPart type locally
+type ToolUIPartState = 
+  | "input-streaming"
+  | "input-available"
+  | "approval-requested"
+  | "approval-responded"
+  | "output-denied"
+  | "output-available"
+  | "output-error";
+
+type ToolUIPart = {
+  type: "tool-ui";
+  state: ToolUIPartState;
+  content?: ReactNode;
+  input?: unknown;
+  output?: unknown;
+  errorText?: string;
+};
+
 import {
   CheckCircleIcon,
   ChevronDownIcon,
@@ -31,7 +49,7 @@ export const Tool = ({ className, ...props }: ToolProps) => (
 
 export type ToolHeaderProps = {
   title?: string;
-  type: ToolUIPart["type"];
+  type: string;
   state: ToolUIPart["state"];
   className?: string;
 };

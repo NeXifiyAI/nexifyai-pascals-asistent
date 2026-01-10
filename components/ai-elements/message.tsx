@@ -1,6 +1,5 @@
 "use client";
 
-import type { FileUIPart, UIMessage } from "ai";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -20,8 +19,26 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
+// Define custom types locally
+type UIMessageRole = "user" | "assistant";
+
+type FileUIPart = {
+  type: "file-ui";
+  name?: string;
+  filename?: string;
+  mimeType?: string;
+  mediaType?: string;
+  size?: number;
+  url?: string;
+};
+
+type UIMessage = {
+  role: UIMessageRole;
+  content: string;
+};
+
 export type MessageProps = HTMLAttributes<HTMLDivElement> & {
-  from: UIMessage["role"];
+  from: UIMessageRole;
 };
 
 export const Message = ({ className, from, ...props }: MessageProps) => (

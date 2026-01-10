@@ -1,4 +1,4 @@
-import type { InferUITool, UIMessage } from "ai";
+import type { ToolInvocation, Message } from "ai";
 import { z } from "zod";
 import type { ArtifactKind } from "../components/artifact";
 import type { createDocument } from "./ai/tools/create-document";
@@ -15,20 +15,6 @@ export const messageMetadataSchema = z.object({
 
 export type MessageMetadata = z.infer<typeof messageMetadataSchema>;
 
-type weatherTool = InferUITool<typeof getWeather>;
-type createDocumentTool = InferUITool<ReturnType<typeof createDocument>>;
-type updateDocumentTool = InferUITool<ReturnType<typeof updateDocument>>;
-type requestSuggestionsTool = InferUITool<
-  ReturnType<typeof requestSuggestions>
->;
-
-export type ChatTools = {
-  getWeather: weatherTool;
-  createDocument: createDocumentTool;
-  updateDocument: updateDocumentTool;
-  requestSuggestions: requestSuggestionsTool;
-};
-
 export type CustomUIDataTypes = {
   textDelta: string;
   imageDelta: string;
@@ -44,11 +30,9 @@ export type CustomUIDataTypes = {
   "chat-title": string;
 };
 
-export type ChatMessage = UIMessage<
-  MessageMetadata,
-  CustomUIDataTypes,
-  ChatTools
->;
+// Simplified ChatMessage type for compatibility with current Vercel AI SDK
+// Since UIMessage and InferUITool are no longer exported or have changed
+export type ChatMessage = Message;
 
 export type Attachment = {
   name: string;

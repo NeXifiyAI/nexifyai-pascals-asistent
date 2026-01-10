@@ -1,4 +1,4 @@
-import type { UseChatHelpers } from "@ai-sdk/react";
+import type { ExtendedUseChatHelpers as UseChatHelpers } from "@/lib/ai-sdk-compat";
 import equal from "fast-deep-equal";
 import { ArrowDownIcon } from "lucide-react";
 import { memo } from "react";
@@ -10,13 +10,13 @@ import { Greeting } from "./greeting";
 import { PreviewMessage, ThinkingMessage } from "./message";
 
 type MessagesProps = {
-  addToolApprovalResponse: UseChatHelpers<ChatMessage>["addToolApprovalResponse"];
+  addToolApprovalResponse: UseChatHelpers["addToolApprovalResponse"];
   chatId: string;
-  status: UseChatHelpers<ChatMessage>["status"];
+  status: UseChatHelpers["status"];
   votes: Vote[] | undefined;
   messages: ChatMessage[];
-  setMessages: UseChatHelpers<ChatMessage>["setMessages"];
-  regenerate: UseChatHelpers<ChatMessage>["regenerate"];
+  setMessages: UseChatHelpers["setMessages"];
+  regenerate: UseChatHelpers["regenerate"];
   isReadonly: boolean;
   isArtifactVisible: boolean;
   selectedModelId: string;
@@ -78,9 +78,9 @@ function PureMessages({
           ))}
 
           {status === "submitted" &&
-            !messages.some((msg) =>
+            !messages.some((msg: any) =>
               msg.parts?.some(
-                (part) => "state" in part && part.state === "approval-responded"
+                (part: any) => "state" in part && part.state === "approval-responded"
               )
             ) && <ThinkingMessage />}
 

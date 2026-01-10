@@ -1,5 +1,6 @@
-import type { UseChatHelpers } from "@ai-sdk/react";
-import type { DataUIPart } from "ai";
+import type { ExtendedUseChatHelpers as UseChatHelpers } from "@/lib/ai-sdk-compat";
+// DataUIPart type not exported in ai v4
+type DataUIPart = any;;
 import type { ComponentType, Dispatch, ReactNode, SetStateAction } from "react";
 import type { Suggestion } from "@/lib/db/schema";
 import type { ChatMessage, CustomUIDataTypes } from "@/lib/types";
@@ -24,7 +25,7 @@ type ArtifactAction<M = any> = {
 };
 
 export type ArtifactToolbarContext = {
-  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
+  sendMessage: UseChatHelpers["sendMessage"];
 };
 
 export type ArtifactToolbarItem = {
@@ -64,7 +65,7 @@ type ArtifactConfig<T extends string, M = any> = {
   onStreamPart: (args: {
     setMetadata: Dispatch<SetStateAction<M>>;
     setArtifact: Dispatch<SetStateAction<UIArtifact>>;
-    streamPart: DataUIPart<CustomUIDataTypes>;
+    streamPart: any;
   }) => void;
 };
 
@@ -78,7 +79,7 @@ export class Artifact<T extends string, M = any> {
   readonly onStreamPart: (args: {
     setMetadata: Dispatch<SetStateAction<M>>;
     setArtifact: Dispatch<SetStateAction<UIArtifact>>;
-    streamPart: DataUIPart<CustomUIDataTypes>;
+    streamPart: any;
   }) => void;
 
   constructor(config: ArtifactConfig<T, M>) {

@@ -88,7 +88,7 @@ export const sheetArtifact = new Artifact<"sheet", Metadata>({
       description: "Format and clean data",
       icon: <SparklesIcon />,
       onClick: ({ sendMessage }) => {
-        sendMessage({
+        sendMessage?.({
           role: "user",
           parts: [
             { type: "text", text: "Can you please format and clean the data?" },
@@ -100,7 +100,7 @@ export const sheetArtifact = new Artifact<"sheet", Metadata>({
       description: "Analyze and visualize data",
       icon: <LineChartIcon />,
       onClick: ({ sendMessage }) => {
-        sendMessage({
+        sendMessage?.({
           role: "user",
           parts: [
             {

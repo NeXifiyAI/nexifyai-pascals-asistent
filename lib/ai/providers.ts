@@ -39,7 +39,7 @@ export function getLanguageModel(modelId: string) {
     const gatewayModelId = modelId.replace(THINKING_SUFFIX_REGEX, "");
 
     return wrapLanguageModel({
-      model: gateway.languageModel(gatewayModelId),
+      model: gateway.languageModel(gatewayModelId) as any,
       middleware: extractReasoningMiddleware({ tagName: "thinking" }),
     });
   }

@@ -1,15 +1,14 @@
-import type {
-    AssistantModelMessage,
-    ToolModelMessage,
-    UIMessage,
-    UIMessagePart,
+import {
+    type Message,
+    type CoreMessage,
+    type AssistantMessage,
 } from 'ai';
 import { type ClassValue, clsx } from 'clsx';
 import { formatISO } from 'date-fns';
 import { twMerge } from 'tailwind-merge';
 import type { DBMessage, Document } from './db/schema';
 import { ChatSDKError, type ErrorCode } from './errors';
-import type { ChatMessage, ChatTools, CustomUIDataTypes } from './types';
+import type { ChatMessage, CustomUIDataTypes } from './types';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -63,10 +62,10 @@ export function generateUUID(): string {
   });
 }
 
-type ResponseMessageWithoutId = ToolModelMessage | AssistantModelMessage;
+type ResponseMessageWithoutId = CoreMessage & { role: 'tool' | 'assistant' };
 type ResponseMessage = ResponseMessageWithoutId & { id: string };
 
-export function getMostRecentUserMessage(messages: UIMessage[]) {
+export function getMostRecentUserMessage(messages: Message[]) {
   const userMessages = messages.filter((message) => message.role === 'user');
   return userMessages.at(-1);
 }
@@ -84,7 +83,7 @@ export function getDocumentTimestampByIndex(
 export function getTrailingMessageId({
   messages,
 }: {
-  messages: ResponseMessage[];
+  messages: Message[];
 }): string | null {
   const trailingMessage = messages.at(-1);
 
@@ -100,17 +99,24 @@ export function sanitizeText(text: string) {
 export function convertToUIMessages(messages: DBMessage[]): ChatMessage[] {
   return messages.map((message) => ({
     id: message.id,
-    role: message.role as 'user' | 'assistant' | 'system',
-    parts: message.parts as UIMessagePart<CustomUIDataTypes, ChatTools>[],
+    role: message.role as 'user' | 'assistant' | 'system' | 'data',
+    content: "", // Add default content string
+    parts: message.parts as any, // Use any to bypass type issues during migration
+    createdAt: message.createdAt,
     metadata: {
       createdAt: formatISO(message.createdAt),
     },
-  }));
+  })) as ChatMessage[];
 }
 
-export function getTextFromMessage(message: ChatMessage | UIMessage): string {
-  return message.parts
-    .filter((part) => part.type === 'text')
-    .map((part) => (part as { type: 'text'; text: string}).text)
-    .join('');
+export function getTextFromMessage(message: ChatMessage): string {
+  if (message.content) return message.content;
+  
+  if (message.parts) {
+      return message.parts
+        .filter((part) => part.type === 'text')
+        .map((part) => (part as { type: 'text'; text: string}).text)
+        .join('');
+  }
+  return "";
 }

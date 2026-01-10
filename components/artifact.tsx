@@ -1,4 +1,4 @@
-import type { UseChatHelpers } from "@ai-sdk/react";
+import type { ExtendedUseChatHelpers as UseChatHelpers } from "@/lib/ai-sdk-compat";
 import { formatDistance } from "date-fns";
 import equal from "fast-deep-equal";
 import { AnimatePresence, motion } from "framer-motion";
@@ -70,19 +70,19 @@ function PureArtifact({
   selectedVisibilityType,
   selectedModelId,
 }: {
-  addToolApprovalResponse: UseChatHelpers<ChatMessage>["addToolApprovalResponse"];
+  addToolApprovalResponse: any; // TODO: Update to new ai-sdk API
   chatId: string;
   input: string;
   setInput: Dispatch<SetStateAction<string>>;
-  status: UseChatHelpers<ChatMessage>["status"];
-  stop: UseChatHelpers<ChatMessage>["stop"];
+  status: UseChatHelpers["status"];
+  stop: UseChatHelpers["stop"];
   attachments: Attachment[];
   setAttachments: Dispatch<SetStateAction<Attachment[]>>;
   messages: ChatMessage[];
-  setMessages: UseChatHelpers<ChatMessage>["setMessages"];
+  setMessages: UseChatHelpers["setMessages"];
   votes: Vote[] | undefined;
-  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
-  regenerate: UseChatHelpers<ChatMessage>["regenerate"];
+  sendMessage: any; // TODO: Update to new ai-sdk API
+  regenerate: any; // TODO: Update to new ai-sdk API
   isReadonly: boolean;
   selectedVisibilityType: VisibilityType;
   selectedModelId: string;
@@ -339,7 +339,7 @@ function PureArtifact({
                     chatId={chatId}
                     className="bg-background dark:bg-muted"
                     input={input}
-                    messages={messages}
+                    messages={messages as any}
                     selectedModelId={selectedModelId}
                     selectedVisibilityType={selectedVisibilityType}
                     sendMessage={sendMessage}

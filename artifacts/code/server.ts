@@ -1,8 +1,15 @@
-import { streamObject } from "ai";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { streamObject, zodSchema } from "ai";
 import { z } from "zod";
 import { codePrompt, updateDocumentPrompt } from "../../lib/ai/prompts";
 import { getArtifactModel } from "../../lib/ai/providers";
 import { createDocumentHandler } from "../../lib/artifacts/server";
+
+const codeSchema = z.object({
+  code: z.string(),
+});
+
+type CodeObject = z.infer<typeof codeSchema>;
 
 export const codeDocumentHandler = createDocumentHandler<"code">({
   kind: "code",
@@ -10,28 +17,18 @@ export const codeDocumentHandler = createDocumentHandler<"code">({
     let draftContent = "";
 
     const { fullStream } = streamObject({
-      model: getArtifactModel(),
+      model: getArtifactModel() as any,
       system: codePrompt,
       prompt: title,
-      schema: z.object({
-        code: z.string(),
-      }),
+      schema: zodSchema(codeSchema as any),
     });
 
     for await (const delta of fullStream) {
-      const { type } = delta;
-
-      if (type === "object") {
-        const { object } = delta;
-        const { code } = object;
-
+      if (delta.type === "object") {
+        const obj = delta.object as CodeObject | undefined;
+        const code = obj?.code;
         if (code) {
-          dataStream.write({
-            type: "data-codeDelta",
-            data: code ?? "",
-            transient: true,
-          });
-
+          dataStream.writeData({ type: "data-codeDelta", data: code });
           draftContent = code;
         }
       }
@@ -43,28 +40,18 @@ export const codeDocumentHandler = createDocumentHandler<"code">({
     let draftContent = "";
 
     const { fullStream } = streamObject({
-      model: getArtifactModel(),
+      model: getArtifactModel() as any,
       system: updateDocumentPrompt(document.content, "code"),
       prompt: description,
-      schema: z.object({
-        code: z.string(),
-      }),
+      schema: zodSchema(codeSchema as any),
     });
 
     for await (const delta of fullStream) {
-      const { type } = delta;
-
-      if (type === "object") {
-        const { object } = delta;
-        const { code } = object;
-
+      if (delta.type === "object") {
+        const obj = delta.object as CodeObject | undefined;
+        const code = obj?.code;
         if (code) {
-          dataStream.write({
-            type: "data-codeDelta",
-            data: code ?? "",
-            transient: true,
-          });
-
+          dataStream.writeData({ type: "data-codeDelta", data: code });
           draftContent = code;
         }
       }

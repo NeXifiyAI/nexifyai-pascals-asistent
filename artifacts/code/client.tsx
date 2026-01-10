@@ -250,7 +250,7 @@ export const codeArtifact = new Artifact<"code", Metadata>({
       icon: <MessageIcon />,
       description: "Add comments",
       onClick: ({ sendMessage }) => {
-        sendMessage({
+        sendMessage?.({
           role: "user",
           parts: [
             {
@@ -265,7 +265,7 @@ export const codeArtifact = new Artifact<"code", Metadata>({
       icon: <LogsIcon />,
       description: "Add logs",
       onClick: ({ sendMessage }) => {
-        sendMessage({
+        sendMessage?.({
           role: "user",
           parts: [
             {

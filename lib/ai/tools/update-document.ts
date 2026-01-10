@@ -1,4 +1,4 @@
-import { tool, type UIMessageStreamWriter } from "ai";
+import { tool, type DataStreamWriter } from "ai";
 import type { Session } from "next-auth";
 import { z } from "zod";
 import { documentHandlersByArtifactKind } from "../../artifacts/server";
@@ -7,13 +7,13 @@ import type { ChatMessage } from "../../types";
 
 type UpdateDocumentProps = {
   session: Session;
-  dataStream: UIMessageStreamWriter<ChatMessage>;
+  dataStream: DataStreamWriter;
 };
 
 export const updateDocument = ({ session, dataStream }: UpdateDocumentProps) =>
   tool({
     description: "Update a document with the given description.",
-    inputSchema: z.object({
+    parameters: z.object({
       id: z.string().describe("The ID of the document to update"),
       description: z
         .string()
@@ -28,10 +28,9 @@ export const updateDocument = ({ session, dataStream }: UpdateDocumentProps) =>
         };
       }
 
-      dataStream.write({
+      dataStream.writeData({
         type: "data-clear",
         data: null,
-        transient: true,
       });
 
       const documentHandler = documentHandlersByArtifactKind.find(
@@ -50,7 +49,7 @@ export const updateDocument = ({ session, dataStream }: UpdateDocumentProps) =>
         session,
       });
 
-      dataStream.write({ type: "data-finish", data: null, transient: true });
+      dataStream.writeData({ type: "data-finish", data: null });
 
       return {
         id,

@@ -1,6 +1,6 @@
 "use client";
 
-import type { UseChatHelpers } from "@ai-sdk/react";
+import type { ExtendedUseChatHelpers as UseChatHelpers } from "@/lib/ai-sdk-compat";
 import {
   type Dispatch,
   type SetStateAction,
@@ -18,8 +18,8 @@ import { Textarea } from "./ui/textarea";
 export type MessageEditorProps = {
   message: ChatMessage;
   setMode: Dispatch<SetStateAction<"view" | "edit">>;
-  setMessages: UseChatHelpers<ChatMessage>["setMessages"];
-  regenerate: UseChatHelpers<ChatMessage>["regenerate"];
+  setMessages: UseChatHelpers["setMessages"];
+  regenerate: UseChatHelpers["regenerate"];
 };
 
 export function MessageEditor({
@@ -100,7 +100,7 @@ export function MessageEditor({
             });
 
             setMode("view");
-            regenerate();
+            regenerate?.();
           }}
           variant="default"
         >

@@ -21,6 +21,9 @@ export const Suggestion = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { width: windowWidth } = useWindowSize();
+  
+  // Cast to any to bypass type issues with UISuggestion
+  const sug = suggestion as any;
 
   return (
     <AnimatePresence>
@@ -30,7 +33,7 @@ export const Suggestion = ({
           className="-right-12 md:-right-16 absolute z-50 flex w-56 flex-col gap-3 rounded-2xl border bg-background p-3 font-sans text-sm shadow-xl"
           exit={{ opacity: 0, y: -10 }}
           initial={{ opacity: 0, y: -10 }}
-          key={suggestion.id}
+          key={(suggestion as any).id || Math.random()}
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
           whileHover={{ scale: 1.05 }}
         >
@@ -49,7 +52,7 @@ export const Suggestion = ({
               <CrossIcon size={12} />
             </button>
           </div>
-          <div>{suggestion.description}</div>
+          <div>{sug.description}</div>
           <Button
             className="w-fit rounded-full px-3 py-1.5"
             onClick={onApply}

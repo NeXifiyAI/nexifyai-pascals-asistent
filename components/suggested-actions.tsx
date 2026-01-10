@@ -1,6 +1,6 @@
 "use client";
 
-import type { UseChatHelpers } from "@ai-sdk/react";
+import type { ExtendedUseChatHelpers as UseChatHelpers } from "@/lib/ai-sdk-compat";
 import { motion } from "framer-motion";
 import { memo } from "react";
 import type { ChatMessage } from "@/lib/types";
@@ -9,7 +9,7 @@ import type { VisibilityType } from "./visibility-selector";
 
 type SuggestedActionsProps = {
   chatId: string;
-  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
+  sendMessage: UseChatHelpers["sendMessage"];
   selectedVisibilityType: VisibilityType;
 };
 
@@ -38,7 +38,7 @@ function PureSuggestedActions({ chatId, sendMessage }: SuggestedActionsProps) {
             className="h-auto w-full whitespace-normal p-3 text-left"
             onClick={(suggestion) => {
               window.history.pushState({}, "", `/chat/${chatId}`);
-              sendMessage({
+              sendMessage?.({
                 role: "user",
                 parts: [{ type: "text", text: suggestion }],
               });

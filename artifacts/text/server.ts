@@ -9,7 +9,7 @@ export const textDocumentHandler = createDocumentHandler<"text">({
     let draftContent = "";
 
     const { fullStream } = streamText({
-      model: getArtifactModel(),
+      model: getArtifactModel() as any,
       system:
         "Write about the given topic. Markdown is supported. Use headings wherever appropriate.",
       experimental_transform: smoothStream({ chunking: "word" }),
@@ -20,14 +20,13 @@ export const textDocumentHandler = createDocumentHandler<"text">({
       const { type } = delta;
 
       if (type === "text-delta") {
-        const { text } = delta;
+        const { textDelta } = delta;
 
-        draftContent += text;
+        draftContent += textDelta;
 
-        dataStream.write({
+        dataStream.writeData({
           type: "data-textDelta",
-          data: text,
-          transient: true,
+          data: textDelta,
         });
       }
     }
@@ -38,7 +37,7 @@ export const textDocumentHandler = createDocumentHandler<"text">({
     let draftContent = "";
 
     const { fullStream } = streamText({
-      model: getArtifactModel(),
+      model: getArtifactModel() as any,
       system: updateDocumentPrompt(document.content, "text"),
       experimental_transform: smoothStream({ chunking: "word" }),
       prompt: description,
@@ -56,14 +55,13 @@ export const textDocumentHandler = createDocumentHandler<"text">({
       const { type } = delta;
 
       if (type === "text-delta") {
-        const { text } = delta;
+        const { textDelta } = delta;
 
-        draftContent += text;
+        draftContent += textDelta;
 
-        dataStream.write({
+        dataStream.writeData({
           type: "data-textDelta",
-          data: text,
-          transient: true,
+          data: textDelta,
         });
       }
     }

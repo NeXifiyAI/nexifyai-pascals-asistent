@@ -1,4 +1,5 @@
-import { tool, type UIMessageStreamWriter } from "ai";
+import { tool } from "ai";
+import { DataStreamWriter } from "ai";
 import type { Session } from "next-auth";
 import { z } from "zod";
 import {
@@ -10,42 +11,38 @@ import { generateUUID } from "../../utils";
 
 type CreateDocumentProps = {
   session: Session;
-  dataStream: UIMessageStreamWriter<ChatMessage>;
+  dataStream: DataStreamWriter;
 };
 
 export const createDocument = ({ session, dataStream }: CreateDocumentProps) =>
   tool({
     description:
       "Create a document for a writing or content creation activities. This tool will call other functions that will generate the contents of the document based on the title and kind.",
-    inputSchema: z.object({
+    parameters: z.object({
       title: z.string(),
       kind: z.enum(artifactKinds),
     }),
     execute: async ({ title, kind }) => {
       const id = generateUUID();
 
-      dataStream.write({
+      dataStream.writeData({
         type: "data-kind",
         data: kind,
-        transient: true,
       });
 
-      dataStream.write({
+      dataStream.writeData({
         type: "data-id",
         data: id,
-        transient: true,
       });
 
-      dataStream.write({
+      dataStream.writeData({
         type: "data-title",
         data: title,
-        transient: true,
       });
 
-      dataStream.write({
+      dataStream.writeData({
         type: "data-clear",
         data: null,
-        transient: true,
       });
 
       const documentHandler = documentHandlersByArtifactKind.find(
@@ -64,7 +61,7 @@ export const createDocument = ({ session, dataStream }: CreateDocumentProps) =>
         session,
       });
 
-      dataStream.write({ type: "data-finish", data: null, transient: true });
+      dataStream.writeData({ type: "data-finish", data: null });
 
       return {
         id,
