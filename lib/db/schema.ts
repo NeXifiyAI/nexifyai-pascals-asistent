@@ -9,6 +9,7 @@ import {
   timestamp,
   uuid,
   varchar,
+  vector,
 } from "drizzle-orm/pg-core";
 
 export const user = pgTable("User", {
@@ -176,7 +177,8 @@ export const knowledge = pgTable("Knowledge", {
   category: varchar("category", { length: 50 }).notNull(), // facts, code, conversations, preferences
   tags: json("tags").$type<string[]>().default([]),
   isActive: boolean("isActive").notNull().default(true), // Current active truth vs historical
-  embeddingId: text("embeddingId"), // Reference to Qdrant Point ID
+  embeddingId: text("embeddingId"), // Reference to Qdrant Point ID (Legacy/Sync)
+  embedding: vector("embedding", { dimensions: 1536 }), // OpenAI text-embedding-3-small
   metadata: json("metadata").default({}),
   createdAt: timestamp("createdAt").notNull().defaultNow(),
   updatedAt: timestamp("updatedAt").notNull().defaultNow(),
