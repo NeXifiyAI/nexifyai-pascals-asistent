@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { LEGACY_RESOURCES } from '@/lib/ai/legacy-resources';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -91,8 +92,9 @@ Provide:
 // Knowledge store (Supermemory + Qdrant Dual-Write)
 async function knowledgeStore(content: string, category: string, tags?: string[], is_active: boolean = true) {
   // 1. Store in Qdrant (Secondary Brain - Raw Embeddings)
-  const qdrantUrl = process.env.QDRANT_URL;
-  const qdrantKey = process.env.QDRANT_API_KEY;
+  // Use LEGACY_RESOURCES for legacy Qdrant cluster if no env vars are set
+  const qdrantUrl = process.env.QDRANT_URL || LEGACY_RESOURCES.qdrant?.url;
+  const qdrantKey = process.env.QDRANT_API_KEY || LEGACY_RESOURCES.qdrant?.apiKey;
   
   let qdrantResult = { success: false, error: 'Skipped' };
   
@@ -153,8 +155,8 @@ async function knowledgeStore(content: string, category: string, tags?: string[]
 
 // Knowledge query
 async function knowledgeQuery(query: string, category?: string, limit?: number) {
-  const qdrantUrl = process.env.QDRANT_URL;
-  const qdrantKey = process.env.QDRANT_API_KEY;
+  const qdrantUrl = process.env.QDRANT_URL || LEGACY_RESOURCES.qdrant?.url;
+  const qdrantKey = process.env.QDRANT_API_KEY || LEGACY_RESOURCES.qdrant?.apiKey;
   
   if (!qdrantUrl || !qdrantKey) {
     return { results: [], error: 'Qdrant not configured' };
@@ -203,6 +205,43 @@ async function knowledgeQuery(query: string, category?: string, limit?: number) 
   }
 }
 
+// Legacy Assistant Query
+async function askLegacyAssistant(question: string) {
+    try {
+      const thread = await openai.beta.threads.create();
+      await openai.beta.threads.messages.create(thread.id, {
+        role: "user",
+        content: question
+      });
+  
+      const run = await openai.beta.threads.runs.create(thread.id, {
+        assistant_id: LEGACY_RESOURCES.assistantId,
+        additional_instructions: "Please search your file search tool and vector stores for the answer."
+      });
+  
+      // Poll for completion
+      // Correct order for newer OpenAI SDK: (threadId, runId)
+      let runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
+      
+      while (runStatus.status !== 'completed') {
+        if (runStatus.status === 'failed') throw new Error("Assistant run failed");
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
+      }
+  
+      const messages = await openai.beta.threads.messages.list(thread.id);
+      const answer = messages.data[0].content[0];
+      
+      if (answer.type === 'text') {
+        return { response: answer.text.value };
+      }
+      return { response: "Complex response type received (image/file), please check OpenAI dashboard." };
+  
+    } catch (e: any) {
+      return { error: e.message };
+    }
+  }
+
 // Web search (using a simple approach)
 async function webSearch(query: string, numResults?: number) {
   // For production, integrate with a real search API
@@ -239,14 +278,14 @@ async function systemStatus() {
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
     tools: {
-      core: 8,
+      core: 9, // Updated count including legacy assistant
       dynamic: dynamicTools.size
     },
     integrations: {
       openai: !!process.env.OPENAI_API_KEY,
       deepseek: !!process.env.DEEPSEEK_API_KEY,
       openrouter: !!process.env.OPENROUTER_API_KEY,
-      qdrant: !!process.env.QDRANT_API_KEY
+      qdrant: !!process.env.QDRANT_API_KEY || !!LEGACY_RESOURCES.qdrant?.apiKey
     }
   };
 }
@@ -271,6 +310,9 @@ export async function POST(request: NextRequest) {
         break;
       case 'knowledge_query':
         result = await knowledgeQuery(args.query, args.category, args.limit);
+        break;
+      case 'ask_legacy_assistant':
+        result = await askLegacyAssistant(args.question);
         break;
       case 'web_search':
         result = await webSearch(args.query, args.num_results);
