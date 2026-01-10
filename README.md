@@ -32,6 +32,15 @@ Ein vollständiger MCP (Model Context Protocol) Server für das NeXify AI Ökosy
 └─────────────────────────────────────────────────────────────┘
 ```
 
+## 📚 Dokumentation
+
+**Neu:** [Vollständiger GitHub Dokumentations-Leitfaden](./GITHUB_DOKUMENTATION.md) - Erfahren Sie, wo und wie Sie Projektdokumentation in GitHub finden und nutzen (Wiki, Pages, README, docs/).
+
+Weitere Dokumentation:
+- [Architektur-Details](./ARCHITECTURE.md)
+- [Mission & Vision](./MISSION.md)
+- [Brain Knowledge System](./BRAIN_KNOWLEDGE.md)
+
 ## 📦 Installation
 
 ```bash
