@@ -16,3 +16,17 @@ export const qdrantClient = new QdrantClient({
 export const COLLECTIONS = {
   MEMORY: "brain_memory",
 };
+
+export type MemoryPoint = {
+  id: string;
+  payload: {
+    content: string;
+    timestamp: number;
+    type: "fact" | "code" | "preference" | "conversation";
+    is_active: boolean; // TRUE = Current/Live, FALSE = Historical/Archived
+    superseded_by?: string; // ID of the new truth if this point is outdated
+    source: "user" | "system" | "external";
+  };
+  vector: number[];
+};
+
