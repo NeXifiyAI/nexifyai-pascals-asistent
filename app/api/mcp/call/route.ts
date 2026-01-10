@@ -221,12 +221,18 @@ async function askLegacyAssistant(question: string) {
   
       // Poll for completion
       // Correct order for newer OpenAI SDK: (threadId, runId)
-      let runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
+      let runStatus = await (openai.beta.threads.runs.retrieve as any)(
+        thread.id, 
+        run.id
+      );
       
       while (runStatus.status !== 'completed') {
         if (runStatus.status === 'failed') throw new Error("Assistant run failed");
         await new Promise(resolve => setTimeout(resolve, 1000));
-        runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
+        runStatus = await (openai.beta.threads.runs.retrieve as any)(
+          thread.id, 
+          run.id
+        );
       }
   
       const messages = await openai.beta.threads.messages.list(thread.id);
