@@ -2,6 +2,7 @@
 // This file bootstraps the agent with its identity and persistent memory.
 
 import { qdrantClient, COLLECTIONS } from "@/lib/qdrant";
+import { getSupermemory } from "@/lib/supermemory";
 import { systemPrompt } from "./prompts";
 
 // Configuration for the Agent's Memory
@@ -25,6 +26,8 @@ export interface AgentContext {
 export async function initializeAgent(context: AgentContext) {
   // 1. Check connections
   const isQdrantConnected = await checkQdrantConnection();
+  const supermemory = getSupermemory();
+  const isSupermemoryReady = !!supermemory;
   
   // 2. Load System Prompt with Identity
   const prompt = systemPrompt({
@@ -37,9 +40,13 @@ export async function initializeAgent(context: AgentContext) {
     systemPrompt: prompt,
     memoryStatus: {
       qdrant: isQdrantConnected ? "connected" : "disconnected",
+      supermemory: isSupermemoryReady ? "connected" : "missing_key",
       openaiVectorStore: "ready (assumed)", // OpenAI connection is handled by the model provider
     },
     config: MEMORY_CONFIG,
+    clients: {
+      supermemory,
+    }
   };
 }
 
@@ -59,13 +66,14 @@ async function checkQdrantConnection(): Promise<boolean> {
  */
 export async function saveEpisode(content: string, metadata: Record<string, any> = {}) {
   try {
-    // Note: Actual embedding generation would happen here or via a separate service
-    // For now, we are setting up the structure.
-    console.log("Saving episode to Supermemory:", content);
-    
-    // In a full implementation, we would:
-    // 1. Generate embedding for 'content' using OpenAI
-    // 2. Push to Qdrant with metadata
+    const supermemory = getSupermemory();
+    if (supermemory) {
+        await supermemory.addMemory(content, metadata);
+        console.log("Saved episode to Supermemory.");
+    }
+
+    // Also push to Qdrant as backup/secondary store if needed
+    // (Implementation pending specific Qdrant schema details)
     
     return true;
   } catch (error) {
