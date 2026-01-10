@@ -168,3 +168,18 @@ export const stream = pgTable(
 );
 
 export type Stream = InferSelectModel<typeof stream>;
+
+// Knowledge Base Schema (Replacing Supermemory with Supabase)
+export const knowledge = pgTable("Knowledge", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  content: text("content").notNull(),
+  category: varchar("category", { length: 50 }).notNull(), // facts, code, conversations, preferences
+  tags: json("tags").$type<string[]>().default([]),
+  isActive: boolean("isActive").notNull().default(true), // Current active truth vs historical
+  embeddingId: text("embeddingId"), // Reference to Qdrant Point ID
+  metadata: json("metadata").default({}),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+});
+
+export type Knowledge = InferSelectModel<typeof knowledge>;
