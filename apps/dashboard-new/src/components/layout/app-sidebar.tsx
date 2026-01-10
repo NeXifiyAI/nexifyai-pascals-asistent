@@ -42,6 +42,7 @@ import {
   IconPlus,
   IconMessage,
   IconTrash,
+  IconLogout,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -62,6 +63,21 @@ export default function AppSidebar() {
     createSession,
     deleteSession,
   } = useChatStore();
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+
+      if (response.ok) {
+        // Redirect to login page
+        router.push("/login");
+      }
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   React.useEffect(() => {
     // Side effects based on sidebar state changes
@@ -253,6 +269,16 @@ export default function AppSidebar() {
                     Notifications
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="text-destructive"
+                >
+                  <IconLogout className="mr-2 h-4 w-4" />
+                  Logout
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
