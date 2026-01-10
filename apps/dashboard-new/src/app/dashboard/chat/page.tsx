@@ -42,15 +42,25 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Load current session on mount
+  // Load current session on mount AND when session changes
   useEffect(() => {
     const session = getCurrentSession();
     if (session && session.messages.length > 0) {
       setMessages(session.messages);
+    } else if (currentSessionId) {
+      // New empty session - clear messages
+      setMessages([
+        {
+          id: "welcome",
+          role: "assistant",
+          content:
+            "Hallo Pascal! Ich bin dein NeXify AI Assistent. Ich kann dir bei Programmierung, Recherche, Analysen und vielem mehr helfen. Was kann ich für dich tun?",
+        },
+      ]);
     } else if (!currentSessionId) {
       createSession("Neuer Chat");
     }
-  }, []);
+  }, [currentSessionId]); // React to session changes
 
   // Auto-save messages to current session
   useEffect(() => {
