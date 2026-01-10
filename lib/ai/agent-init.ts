@@ -3,12 +3,13 @@
 
 import { qdrantClient, COLLECTIONS } from "@/lib/qdrant";
 import { getSupermemory } from "@/lib/supermemory";
+import { NEXIFY_SYSTEM_PROMPT, NEXIFY_IDENTITY } from "./identity";
 import { systemPrompt } from "./prompts";
 
 // Configuration for the Agent's Memory
 export const MEMORY_CONFIG = {
-  openaiVectorStoreId: "vs_693ff5bbf28c81918df07c5809949df0",
-  qdrantClusterId: "f256664d-f56d-42e5-8fbd-e724b5f832bf",
+  openaiVectorStoreId: NEXIFY_IDENTITY.architecture.primaryBrain.id,
+  qdrantClusterId: NEXIFY_IDENTITY.architecture.secondaryBrain.clusterId,
   collections: {
     primary: COLLECTIONS.MEMORY,
   },
@@ -29,15 +30,17 @@ export async function initializeAgent(context: AgentContext) {
   const supermemory = getSupermemory();
   const isSupermemoryReady = !!supermemory;
   
-  // 2. Load System Prompt with Identity
-  const prompt = systemPrompt({
+  // 2. Load System Prompt with Identity (Merge UI prompts with Master Identity)
+  const basePrompt = systemPrompt({
     selectedChatModel: context.modelId,
     requestHints: context.requestHints || { latitude: 0, longitude: 0, city: "Unknown", country: "Unknown" },
   });
 
+  const fullPrompt = `${NEXIFY_SYSTEM_PROMPT}\n\n---\n\n${basePrompt}`;
+
   // 3. Return the fully configured agent context
   return {
-    systemPrompt: prompt,
+    systemPrompt: fullPrompt,
     memoryStatus: {
       qdrant: isQdrantConnected ? "connected" : "disconnected",
       supermemory: isSupermemoryReady ? "connected" : "missing_key",
