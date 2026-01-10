@@ -71,8 +71,8 @@ export async function saveEpisode(content: string, metadata: Record<string, any>
   try {
     const supermemory = getSupermemory();
     if (supermemory) {
-        await supermemory.addMemory(content, metadata);
-        console.log("Saved episode to Supermemory.");
+        await supermemory.addMemory({ content, metadata });
+        console.log("Saved episode to Supermemory/Supabase.");
     }
 
     // Also push to Qdrant as backup/secondary store if needed
