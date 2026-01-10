@@ -47,7 +47,8 @@ const TOOLS = [
       properties: {
         content: { type: 'string', description: 'Content to store' },
         category: { type: 'string', enum: ['facts', 'code', 'conversations', 'preferences'], description: 'Category' },
-        tags: { type: 'array', items: { type: 'string' }, description: 'Tags for categorization' }
+        tags: { type: 'array', items: { type: 'string' }, description: 'Tags for categorization' },
+        is_active: { type: 'boolean', description: 'Is this current active truth? (Default: true)' }
       },
       required: ['content', 'category']
     }
