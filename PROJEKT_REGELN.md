@@ -16,7 +16,14 @@
 4. Prüfe ob Build/Deploy funktioniert
 5. Identifiziere was FEHLT vs. was FALSCH KONFIGURIERT ist
 
-### 2. Templates & Blueprints nutzen
+### 2. EINFACHSTER WEG ZUERST ⭐ NEU
+
+- **ERST** schnell zum Laufen bringen
+- **DANN** auf Soll-Zustand bringen (IMMER, keine Ausnahme!)
+- Nicht overengineeren beim ersten Versuch
+- Iterativ verbessern
+
+### 3. Templates & Blueprints nutzen
 
 - **NIEMALS** alles selbst neu entwickeln
 - **IMMER** zuerst nach Open-Source Templates suchen
@@ -27,122 +34,110 @@
   - shadcn/ui Components
   - T3 Stack / Create-Next-App
 
-### 3. Sprache
+### 4. Sprache
 
 - Mit Pascal: **DEUTSCH**
 - Code/Kommentare: Englisch
+
+### 5. Aufgeschobene Aufgaben dokumentieren
+
+- Aufgaben die später gemacht werden sollen → `SPÄTER_TODO.md`
+- Nichts vergessen!
 
 ---
 
 ## 📁 PROJEKT-STRUKTUR
 
 ```
-nexify-ai-os/                    # Monorepo Root
+nexify-ai-os/
 ├── apps/
 │   └── dashboard/               # ⭐ HAUPT-APP (Next.js 16)
-│       ├── app/                 # App Router
-│       │   ├── page.tsx         # Chat UI
-│       │   └── api/             # API Routes
+│       ├── app/
+│       │   ├── page.tsx         # Landing Page
+│       │   ├── chat/page.tsx    # Chat UI
+│       │   └── api/
 │       │       ├── chat/        # OpenAI Chat Streaming
 │       │       ├── mcp/         # MCP Tools
 │       │       └── webhooks/    # Vercel Webhooks
-│       ├── lib/                 # Utilities
-│       │   ├── qdrant.ts        # Vector DB Client
-│       │   └── supermemory.ts   # Memory Provider
-│       ├── components/          # UI Components
-│       ├── vercel.json          # Vercel Config (functions)
+│       ├── lib/
+│       ├── components/
+│       ├── .vercel/             # Vercel CLI Config
+│       ├── vercel.json
 │       └── package.json
-├── packages/                    # Shared Packages
-├── knowledge/                   # Wissensdateien
-├── vercel.json                  # Root: nur rootDirectory
-└── PROJEKT_REGELN.md           # ⭐ DIESE DATEI
+├── templates/                   # Geklonte Design-Templates
+│   ├── landing-page/
+│   └── backend-elemente/
+├── PROJEKT_REGELN.md           # ⭐ DIESE DATEI
+├── BRAIN_KNOWLEDGE.md          # Aktuelles Wissen
+├── SPÄTER_TODO.md              # Aufgeschobene Aufgaben
+└── nexify-ai-assietenten-api-keys.txt
 ```
 
 ---
 
-## ⚙️ VERCEL DEPLOYMENT (MONOREPO)
+## 🌐 AKTUELLE URLS
 
-### Korrekte Konfiguration:
+| Was            | URL                                            |
+| -------------- | ---------------------------------------------- |
+| Landing Page   | https://dashboard-six-tawny-72.vercel.app/     |
+| Chat App       | https://dashboard-six-tawny-72.vercel.app/chat |
+| Vercel Projekt | pascals-projects-2864de33/dashboard            |
 
-**Root `vercel.json`:**
+---
 
-```json
-{
-  "rootDirectory": "apps/dashboard"
-}
-```
+## ⚙️ VERCEL DEPLOYMENT
+
+### Aktuelle Konfiguration:
 
 **`apps/dashboard/vercel.json`:**
 
 ```json
 {
-  "functions": {
-    "app/api/**/*.ts": {
-      "maxDuration": 60
-    }
-  }
+  "installCommand": "npm install --legacy-peer-deps",
+  "buildCommand": "npm run build",
+  "framework": "nextjs"
 }
 ```
 
-### Häufige Fehler:
+### Wichtig:
 
-- ❌ `functions` Pfad mit `apps/dashboard/...` im Root
-- ❌ `outputDirectory` manuell setzen bei Next.js
-- ❌ `.next` Ordner im Root (verwirrt Vercel)
-- ✅ `rootDirectory` im Root setzen
-- ✅ Relative Pfade in Dashboard `vercel.json`
+- ✅ npm verwenden (nicht pnpm wegen ERR_INVALID_THIS Bug)
+- ✅ `--legacy-peer-deps` für Dependency-Konflikte
+- ✅ Deploy von `apps/dashboard` aus
 
 ---
 
 ## 🔧 TECH STACK
 
-| Komponente      | Technologie         | Version  |
-| --------------- | ------------------- | -------- |
-| Framework       | Next.js             | 16.1.1   |
-| Runtime         | React               | 19.x     |
-| Styling         | Tailwind CSS        | 4.x      |
-| AI              | OpenAI SDK (direkt) | 6.x      |
-| Database        | Postgres (Drizzle)  | -        |
-| Vector DB       | Qdrant              | -        |
-| Auth            | NextAuth            | 5.x beta |
-| Package Manager | pnpm                | 9.x      |
+| Komponente      | Technologie         | Version |
+| --------------- | ------------------- | ------- |
+| Framework       | Next.js             | 16.1.1  |
+| Runtime         | React               | 19.x    |
+| Styling         | Tailwind CSS        | 4.x     |
+| AI              | OpenAI SDK (direkt) | 6.x     |
+| Database        | Postgres (Drizzle)  | -       |
+| Vector DB       | Qdrant              | -       |
+| Package Manager | npm (für Vercel)    | -       |
 
 ### NICHT VERWENDEN:
 
 - ❌ Vercel AI SDK (`ai`, `@ai-sdk/*`) - Zod Konflikt!
 - ❌ `zod-to-json-schema` - Inkompatibel mit zod 3.25+
+- ❌ pnpm auf Vercel - ERR_INVALID_THIS Bug
 
 ---
 
-## 🔑 ENVIRONMENT VARIABLES
+## 🔑 CREDENTIALS
 
-### Vercel (Produktiv):
+Vollständige Liste: `nexify-ai-assietenten-api-keys.txt`
 
-```
-OPENAI_API_KEY=sk-...
-POSTGRES_URL=postgres://...
-QDRANT_URL=https://...
-QDRANT_API_KEY=...
-VERCEL_WEBHOOK_SECRET=WahphdJNfwuUYaqGG3DwMVQd
-```
-
-### Optional:
+### Wichtigste:
 
 ```
-SUPERMEMORY_API_KEY=...
-LEGACY_ASSISTANT_ID=asst_NZtoNWLUW58mWYXLXxV6xeR5
+Vercel-Token: (siehe nexify-ai-assietenten-api-keys.txt)
+GitHub-Token: (siehe nexify-ai-assietenten-api-keys.txt)
+Webhook-Secret: (siehe nexify-ai-assietenten-api-keys.txt)
 ```
-
----
-
-## 🪝 WEBHOOKS
-
-### Vercel Webhook:
-
-- **URL:** `https://nexifyai-pascals-asistent.vercel.app/api/webhooks/vercel`
-- **Secret:** `WahphdJNfwuUYaqGG3DwMVQd`
-- **Events:** Alle Deployment & Alert Events
-- **Verification:** SHA1 HMAC Signature
 
 ---
 
@@ -153,10 +148,10 @@ LEGACY_ASSISTANT_ID=asst_NZtoNWLUW58mWYXLXxV6xeR5
 **Problem:** `zod@3.25.x` hat neue Struktur, `zod-to-json-schema` erwartet alten Export
 **Lösung:** AI SDK komplett entfernt, direkt OpenAI SDK verwendet
 
-### 2. Vercel Monorepo Deploy (2026-01-10)
+### 2. Vercel pnpm Bug (2026-01-10)
 
-**Problem:** Vercel fand falsche `.next` im Root
-**Lösung:** `rootDirectory: "apps/dashboard"` in Root `vercel.json`
+**Problem:** `ERR_INVALID_THIS` bei pnpm install auf Vercel
+**Lösung:** npm statt pnpm verwenden
 
 ### 3. Tailwind Classes nicht geladen (2026-01-10)
 
@@ -165,20 +160,10 @@ LEGACY_ASSISTANT_ID=asst_NZtoNWLUW58mWYXLXxV6xeR5
 
 ---
 
-## 🔮 NÄCHSTE SCHRITTE
-
-1. [ ] Chat UI online testen
-2. [ ] RAG mit Qdrant implementieren
-3. [ ] Besseres UI Template (shadcn) evaluieren
-4. [ ] MCP Server Repository erstellen
-5. [ ] Memory/Learning System ausbauen
-
----
-
 ## 👤 USER PRÄFERENZEN (Pascal)
 
 - Sprache: Deutsch
 - Priorität: Schnelle, funktionierende Lösungen
 - Stil: Direkt, keine unnötigen Erklärungen
-- Erwartung: IST-Analyse vor Änderungen
+- **NEU:** Einfachster Weg zuerst, dann Soll-Zustand
 - Templates: Open-Source bevorzugt

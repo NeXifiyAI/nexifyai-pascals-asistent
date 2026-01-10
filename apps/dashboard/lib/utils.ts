@@ -1,6 +1,10 @@
 import { type ClassValue, clsx } from "clsx";
-import { formatISO } from "date-fns";
 import { twMerge } from "tailwind-merge";
+
+// Simple formatISO replacement to avoid date-fns dependency
+function formatISO(date: Date): string {
+  return date.toISOString();
+}
 import type { DBMessage, Document } from "./db/schema";
 import { ChatSDKError, type ErrorCode } from "./errors";
 import type { ChatMessage, CustomUIDataTypes } from "./types";
