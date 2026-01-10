@@ -54,7 +54,10 @@ export const useChatStore = create<ChatStore>()(
                   ...session,
                   messages,
                   updatedAt: Date.now(),
-                  title: messages[0]?.content?.slice(0, 50) || session.title,
+                  title:
+                    messages
+                      .find((m) => m.role === "user")
+                      ?.content?.slice(0, 50) || session.title,
                 }
               : session,
           ),

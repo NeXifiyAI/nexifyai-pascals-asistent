@@ -32,9 +32,15 @@ export default function SettingsPage() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("nexify_api_keys");
-    if (stored) {
-      setApiKeys(JSON.parse(stored));
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("nexify_api_keys");
+      if (stored) {
+        try {
+          setApiKeys(JSON.parse(stored));
+        } catch (e) {
+          console.error("Failed to parse stored API keys", e);
+        }
+      }
     }
   }, []);
 

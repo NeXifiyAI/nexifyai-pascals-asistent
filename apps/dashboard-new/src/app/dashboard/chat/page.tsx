@@ -60,14 +60,14 @@ export default function ChatPage() {
     } else if (!currentSessionId) {
       createSession("Neuer Chat");
     }
-  }, [currentSessionId]); // React to session changes
+  }, [currentSessionId, getCurrentSession, createSession, setMessages]); // React to session changes
 
   // Auto-save messages to current session
   useEffect(() => {
     if (currentSessionId && messages.length > 1) {
       updateSession(currentSessionId, messages);
     }
-  }, [messages]);
+  }, [messages, currentSessionId, updateSession]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

@@ -1,4 +1,4 @@
-import { openai } from "@ai-sdk/openai";
+import { deepseek } from "@ai-sdk/deepseek";
 import { streamText, tool } from "ai";
 import { loadBrainContext } from "@/lib/brain/loader";
 import {
@@ -10,6 +10,7 @@ import {
 import { z } from "zod";
 
 const SYSTEM_PROMPT = `Du bist der NeXify AI Assistent - Pascals persönlicher, autonomer KI-Assistent.
+Betrieben mit DeepSeek für überlegene Effizienz und Kosteneffektivität.
 
 ## Deine Kernfähigkeiten:
 - Code schreiben & analysieren in allen Programmiersprachen
@@ -57,6 +58,7 @@ Du MUSST deine Tools bei JEDER relevanten Anfrage nutzen!
 - Nutze Tools PROAKTIV - nicht erst wenn der User explizit danach fragt
 - Zeige IMMER wenn du ein Tool nutzt
 - Bei Unsicherheit: Nutze knowledge_query um nachzusehen
+- Erwähne bei Bedarf dass du mit DeepSeek betrieben wirst
 
 ## Dein Wissen:
 Du hast Zugriff auf Pascals Brain - eine Qdrant-Datenbank mit 57.000+ Embeddings über seine Projekte, Präferenzen und Wissen.
@@ -85,7 +87,7 @@ export async function POST(req: Request) {
     : SYSTEM_PROMPT;
 
   const result = streamText({
-    model: openai("gpt-4o"),
+    model: deepseek("deepseek-chat"),
     system: systemPromptWithBrain,
     messages,
     maxSteps: 5, // Allow up to 5 tool roundtrips

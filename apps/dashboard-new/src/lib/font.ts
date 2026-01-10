@@ -1,49 +1,10 @@
-import {
-  Geist,
-  Geist_Mono,
-  Instrument_Sans,
-  Inter,
-  Mulish,
-  Noto_Sans_Mono
-} from 'next/font/google';
+import { cn } from "@/lib/utils";
 
-import { cn } from '@/lib/utils';
-
-const fontSans = Geist({
-  subsets: ['latin'],
-  variable: '--font-sans'
-});
-
-const fontMono = Geist_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono'
-});
-
-const fontInstrument = Instrument_Sans({
-  subsets: ['latin'],
-  variable: '--font-instrument'
-});
-
-const fontNotoMono = Noto_Sans_Mono({
-  subsets: ['latin'],
-  variable: '--font-noto-mono'
-});
-
-const fontMullish = Mulish({
-  subsets: ['latin'],
-  variable: '--font-mullish'
-});
-
-const fontInter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter'
-});
+// Use system fonts to avoid Google Fonts loading issues
+// This prevents the Tailwind v4 + next/font incompatibility
 
 export const fontVariables = cn(
-  fontSans.variable,
-  fontMono.variable,
-  fontInstrument.variable,
-  fontNotoMono.variable,
-  fontMullish.variable,
-  fontInter.variable
+  // Use system stack fonts
+  "font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  "font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Monaco, 'Cascadia Code', monospace",
 );
