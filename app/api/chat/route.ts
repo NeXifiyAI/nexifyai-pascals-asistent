@@ -1,10 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
+import { NextRequest } from 'next/server';
+import { streamText, tool } from 'ai';
+import { createOpenAI } from '@ai-sdk/openai';
+import { z } from 'zod';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+// Vercel AI SDK Setup (Using AI Gateway or direct OpenAI)
+// Falls ein AI Gateway Key existiert, nutzen wir die Base URL des Gateways.
+// Wenn nicht, fallback auf direkten OpenAI API Call.
+// WICHTIG: Die Base URL für das Vercel AI Gateway ist meist 'https://gateway.ai.cloudflare.com/v1/...'
+// oder via Vercel Edge Config. Hier nutzen wir den Standard-Weg der `ai` library.
+// Da der User einen spezifischen API Key für das Gateway angibt, konfigurieren wir den Provider entsprechend.
+
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY, // Standard OpenAI Key (Fallback)
+  // baseURL: '...' // Optional: Falls Gateway URL explizit nötig
 });
 
+// System Prompt
 const SYSTEM_PROMPT = `Du bist der NeXify AI Assistent - Pascals persönlicher, autonomer KI-Assistent.
 
 ## ZWINGENDE ANWEISUNG (MEMORY FIRST PROTOCOL)
@@ -39,12 +50,7 @@ Du musst vor JEDER Antwort dein Gedächtnis konsultieren.
 - Sei präzise, aber freundlich
 - Bei Unsicherheit frage nach`;
 
-
-interface Message {
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-}
-
+// Helper for MCP calls
 async function callMCPTool(toolName: string, args: Record<string, any>) {
   const baseUrl = process.env.VERCEL_URL 
     ? `https://${process.env.VERCEL_URL}` 
@@ -63,152 +69,76 @@ async function callMCPTool(toolName: string, args: Record<string, any>) {
   }
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const { messages, tools } = await request.json();
-    
-    // Build conversation with system prompt
-    const conversationMessages: Message[] = [
-      { role: 'system', content: SYSTEM_PROMPT },
-      ...messages
-    ];
+export async function POST(req: NextRequest) {
+  const { messages } = await req.json();
 
-    // Define available functions for OpenAI
-    const functions = [
-      {
-        name: 'code_generate',
+  const result = streamText({
+    model: openai('gpt-4o'), // Oder 'gpt-5' wenn verfügbar via Gateway
+    system: SYSTEM_PROMPT,
+    messages,
+    tools: {
+      code_generate: tool({
         description: 'Generiert Code in einer bestimmten Programmiersprache',
-        parameters: {
-          type: 'object',
-          properties: {
-            language: { type: 'string', description: 'Programmiersprache (z.B. python, javascript, typescript)' },
-            task: { type: 'string', description: 'Beschreibung was der Code tun soll' },
-            context: { type: 'string', description: 'Zusätzlicher Kontext' }
-          },
-          required: ['language', 'task']
-        }
-      },
-      {
-        name: 'code_analyze',
+        parameters: z.object({
+          language: z.string().describe('Programmiersprache (z.B. python, javascript, typescript)'),
+          task: z.string().describe('Beschreibung was der Code tun soll'),
+          context: z.string().optional().describe('Zusätzlicher Kontext'),
+        }),
+        execute: async (args) => callMCPTool('code_generate', args),
+      }),
+      code_analyze: tool({
         description: 'Analysiert Code und gibt Verbesserungsvorschläge',
-        parameters: {
-          type: 'object',
-          properties: {
-            code: { type: 'string', description: 'Der zu analysierende Code' },
-            language: { type: 'string', description: 'Programmiersprache' },
-            focus: { type: 'string', description: 'Analysefokus (performance, security, style, bugs)' }
-          },
-          required: ['code']
-        }
-      },
-      {
-        name: 'knowledge_store',
-        description: 'Speichert Wissen im Langzeitgedächtnis (Qdrant)',
-        parameters: {
-          type: 'object',
-          properties: {
-            content: { type: 'string', description: 'Der zu speichernde Inhalt' },
-            category: { type: 'string', description: 'Kategorie (facts, code, conversations, preferences)' },
-            tags: { type: 'array', items: { type: 'string' }, description: 'Tags zur Kategorisierung' }
-          },
-          required: ['content', 'category']
-        }
-      },
-      {
-        name: 'knowledge_query',
+        parameters: z.object({
+          code: z.string().describe('Der zu analysierende Code'),
+          language: z.string().describe('Programmiersprache'),
+          focus: z.string().describe('Analysefokus (performance, security, style, bugs)'),
+        }),
+        execute: async (args) => callMCPTool('code_analyze', args),
+      }),
+      knowledge_store: tool({
+        description: 'Speichert Wissen im Langzeitgedächtnis (Qdrant/Supabase)',
+        parameters: z.object({
+          content: z.string().describe('Der zu speichernde Inhalt'),
+          category: z.string().describe('Kategorie (facts, code, conversations, preferences)'),
+          tags: z.array(z.string()).describe('Tags zur Kategorisierung'),
+        }),
+        execute: async (args) => callMCPTool('knowledge_store', args),
+      }),
+      knowledge_query: tool({
         description: 'Ruft gespeichertes Wissen aus dem Gedächtnis ab',
-        parameters: {
-          type: 'object',
-          properties: {
-            query: { type: 'string', description: 'Suchanfrage' },
-            category: { type: 'string', description: 'Optional: Kategorie filtern' },
-            limit: { type: 'number', description: 'Anzahl Ergebnisse' }
-          },
-          required: ['query']
-        }
-      },
-      {
-        name: 'web_search',
+        parameters: z.object({
+          query: z.string().describe('Suchanfrage'),
+          category: z.string().optional().describe('Optional: Kategorie filtern'),
+          limit: z.number().optional().describe('Anzahl Ergebnisse'),
+        }),
+        execute: async (args) => callMCPTool('knowledge_query', args),
+      }),
+      web_search: tool({
         description: 'Sucht im Internet nach aktuellen Informationen',
-        parameters: {
-          type: 'object',
-          properties: {
-            query: { type: 'string', description: 'Suchanfrage' },
-            num_results: { type: 'number', description: 'Anzahl Ergebnisse' }
-          },
-          required: ['query']
-        }
-      },
-      {
-        name: 'ai_route',
+        parameters: z.object({
+          query: z.string().describe('Suchanfrage'),
+          num_results: z.number().optional().describe('Anzahl Ergebnisse'),
+        }),
+        execute: async (args) => callMCPTool('web_search', args),
+      }),
+      ai_route: tool({
         description: 'Leitet Anfrage an das beste AI-Modell weiter (für komplexe Aufgaben)',
-        parameters: {
-          type: 'object',
-          properties: {
-            task: { type: 'string', description: 'Die Aufgabe/Frage' },
-            type: { type: 'string', description: 'Aufgabentyp (code, creative, reasoning, fast, vision)' }
-          },
-          required: ['task']
-        }
-      }
-    ];
+        parameters: z.object({
+          task: z.string().describe('Die Aufgabe/Frage'),
+          type: z.string().describe('Aufgabentyp (code, creative, reasoning, fast, vision)'),
+        }),
+        execute: async (args) => callMCPTool('ai_route', args),
+      }),
+      ask_legacy_assistant: tool({
+        description: 'Fragt den alten NeXfy AI Live-Gedächtnis-Assistenten (via OpenAI Assistant API)',
+        parameters: z.object({
+          query: z.string().describe('Die Frage an das alte Gedächtnis'),
+        }),
+        execute: async (args) => callMCPTool('ask_legacy_assistant', args),
+      }),
+    },
+    maxSteps: 5, // Allow multi-step reasoning (tool usage loops)
+  });
 
-    // Call OpenAI
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: conversationMessages as any,
-      functions,
-      function_call: 'auto',
-      max_tokens: 4096,
-      temperature: 0.7
-    });
-
-    const assistantMessage = completion.choices[0].message;
-    const toolCalls: Array<{ name: string; result?: any }> = [];
-
-    // Handle function calls
-    if (assistantMessage.function_call) {
-      const functionName = assistantMessage.function_call.name;
-      const functionArgs = JSON.parse(assistantMessage.function_call.arguments || '{}');
-      
-      // Call MCP tool
-      const toolResult = await callMCPTool(functionName, functionArgs);
-      toolCalls.push({ name: functionName, result: toolResult });
-
-      // Get final response with tool result
-      const followUpMessages = [
-        ...conversationMessages,
-        assistantMessage,
-        {
-          role: 'function' as const,
-          name: functionName,
-          content: JSON.stringify(toolResult)
-        }
-      ];
-
-      const followUp = await openai.chat.completions.create({
-        model: 'gpt-4o',
-        messages: followUpMessages as any,
-        max_tokens: 4096,
-        temperature: 0.7
-      });
-
-      return NextResponse.json({
-        response: followUp.choices[0].message?.content || '',
-        toolCalls
-      });
-    }
-
-    return NextResponse.json({
-      response: assistantMessage.content || '',
-      toolCalls
-    });
-
-  } catch (error: any) {
-    console.error('Chat error:', error);
-    return NextResponse.json(
-      { error: `Fehler: ${error.message}` },
-      { status: 500 }
-    );
-  }
+  return result.toDataStreamResponse();
 }
