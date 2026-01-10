@@ -1,4 +1,9 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd apps/dashboard && pnpm install && pnpm run build",
+  "outputDirectory": "apps/dashboard/.next",
+  "framework": "nextjs",
+  "installCommand": "pnpm install",
   "functions": {
     "apps/dashboard/app/api/**/*.ts": {
       "maxDuration": 60
