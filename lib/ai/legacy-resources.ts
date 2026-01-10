@@ -9,5 +9,10 @@ export const LEGACY_RESOURCES = {
     "vs_6959a9982bc88191935d0637a635bfdd",
     "vs_693ff5bbf28c81918df07c5809949df0",
     "vs_693d67e8af148191a246ff97b926ddf1"
-  ]
+  ],
+  qdrant: {
+    clusterId: "f256664d-f56d-42e5-8fbd-e724b5f832bf",
+    url: "https://f256664d-f56d-42e5-8fbd-e724b5f832bf.europe-west3-0.gcp.cloud.qdrant.io",
+    apiKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIiwiZXhwIjoxNzk4Nzg4MDY5fQ.68xO6se9dapj1CmITfXPNVwlspcAkWKvto6V6z5bqaI"
+  }
 };
