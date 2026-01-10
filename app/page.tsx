@@ -16,14 +16,7 @@ interface Tool {
 }
 
 export default function Home() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: 'Hallo! Ich bin dein NeXify AI Assistent. Ich kann dir bei Programmierung, Recherche, Analysen und vielem mehr helfen. Was kann ich für dich tun?',
-      timestamp: new Date()
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [tools, setTools] = useState<Tool[]>([]);
@@ -34,6 +27,14 @@ export default function Home() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
+    // Initial welcome message
+    setMessages([{
+      id: '1',
+      role: 'assistant',
+      content: 'Hallo! Ich bin dein NeXify AI Assistent. Ich kann dir bei Programmierung, Recherche, Analysen und vielem mehr helfen. Was kann ich für dich tun?',
+      timestamp: new Date()
+    }]);
+
     fetchTools();
     loadConversations();
   }, []);
