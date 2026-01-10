@@ -1,9 +1,5 @@
-import { NextRequest } from "next/server";
-import OpenAI from "openai";
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+import { openai } from "@ai-sdk/openai";
+import { streamText } from "ai";
 
 const SYSTEM_PROMPT = `Du bist der NeXify AI Assistent - Pascals persönlicher, autonomer KI-Assistent.
 
@@ -19,39 +15,17 @@ const SYSTEM_PROMPT = `Du bist der NeXify AI Assistent - Pascals persönlicher, 
 - Sei präzise, aber freundlich
 - Bei Unsicherheit frage nach`;
 
-export async function POST(req: NextRequest) {
+// Allow streaming responses up to 30 seconds
+export const maxDuration = 30;
+
+export async function POST(req: Request) {
   const { messages } = await req.json();
 
-  const stream = await openai.chat.completions.create({
-    model: "gpt-4o",
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      ...messages.map((m: { role: string; content: string }) => ({
-        role: m.role as "user" | "assistant",
-        content: m.content,
-      })),
-    ],
-    stream: true,
+  const result = streamText({
+    model: openai("gpt-4o"),
+    system: SYSTEM_PROMPT,
+    messages,
   });
 
-  // Create a ReadableStream for the response
-  const encoder = new TextEncoder();
-  const readableStream = new ReadableStream({
-    async start(controller) {
-      for await (const chunk of stream) {
-        const content = chunk.choices[0]?.delta?.content || "";
-        if (content) {
-          controller.enqueue(encoder.encode(content));
-        }
-      }
-      controller.close();
-    },
-  });
-
-  return new Response(readableStream, {
-    headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-      "Cache-Control": "no-cache",
-    },
-  });
+  return result.toDataStreamResponse();
 }

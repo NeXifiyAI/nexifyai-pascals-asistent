@@ -1,130 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback, FormEvent } from "react";
-import { nanoid } from "nanoid";
+import { useChat } from "@ai-sdk/react";
+import { useRef, useEffect, useState, FormEvent } from "react";
 
-interface Message {
-  id: string;
-  role: "user" | "assistant" | "system";
-  content: string;
-  createdAt?: Date;
-}
-
-interface Tool {
-  name: string;
-  description: string;
-}
-
-// Custom useChat hook using OpenAI streaming
-function useChat({
-  api,
-  initialMessages,
-}: {
-  api: string;
-  initialMessages?: Message[];
-}) {
-  const [messages, setMessages] = useState<Message[]>(initialMessages || []);
-  const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
-  };
-
-  const handleSubmit = useCallback(
-    async (e: FormEvent) => {
-      e.preventDefault();
-      if (!input.trim() || isLoading) return;
-
-      const userMessage: Message = {
-        id: nanoid(),
-        role: "user",
-        content: input.trim(),
-        createdAt: new Date(),
-      };
-
-      const newMessages = [...messages, userMessage];
-      setMessages(newMessages);
-      setInput("");
-      setIsLoading(true);
-
-      // Create placeholder for assistant message
-      const assistantId = nanoid();
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: assistantId,
-          role: "assistant",
-          content: "",
-          createdAt: new Date(),
-        },
-      ]);
-
-      try {
-        const response = await fetch(api, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            messages: newMessages.map((m) => ({
-              role: m.role,
-              content: m.content,
-            })),
-          }),
-        });
-
-        if (!response.ok) throw new Error("Failed to send message");
-        if (!response.body) throw new Error("No response body");
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let assistantContent = "";
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          const chunk = decoder.decode(value, { stream: true });
-          assistantContent += chunk;
-
-          // Update the assistant message with streaming content
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === assistantId ? { ...m, content: assistantContent } : m,
-            ),
-          );
-        }
-      } catch (error) {
-        console.error("Chat error:", error);
-        // Update with error message
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantId
-              ? {
-                  ...m,
-                  content:
-                    "Entschuldigung, es gab einen Fehler. Bitte versuche es erneut.",
-                }
-              : m,
-          ),
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [api, input, messages, isLoading],
-  );
-
-  return {
-    messages,
-    input,
-    handleInputChange,
-    handleSubmit,
-    isLoading,
-    setInput,
-  };
-}
-
-export default function Home() {
+export default function ChatPage() {
   const {
     messages,
     input,
@@ -136,7 +15,7 @@ export default function Home() {
     api: "/api/chat",
     initialMessages: [
       {
-        id: "1",
+        id: "welcome",
         role: "assistant",
         content:
           "Hallo! Ich bin dein NeXify AI Assistent. Ich kann dir bei Programmierung, Recherche, Analysen und vielem mehr helfen. Was kann ich für dich tun?",
@@ -144,14 +23,10 @@ export default function Home() {
     ],
   });
 
-  const [tools, setTools] = useState<Tool[]>([]);
   const [showSidebar, setShowSidebar] = useState(true);
   const [conversations, setConversations] = useState<
     Array<{ id: string; title: string; date: string }>
   >([]);
-  const [activeConversation, setActiveConversation] = useState<string | null>(
-    null,
-  );
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -172,10 +47,6 @@ export default function Home() {
 
   const newChat = () => {
     window.location.reload();
-  };
-
-  const loadConversation = (id: string) => {
-    console.log("Load conversation not yet implemented");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -243,12 +114,7 @@ export default function Home() {
           {conversations.map((conv) => (
             <button
               key={conv.id}
-              onClick={() => loadConversation(conv.id)}
-              className={`w-full text-left p-3 rounded-lg hover:bg-[#1e1e2e] transition-colors ${
-                activeConversation === conv.id
-                  ? "bg-[#1e1e2e] border border-purple-500/30"
-                  : ""
-              }`}
+              className="w-full text-left p-3 rounded-lg hover:bg-[#1e1e2e] transition-colors"
             >
               <p className="text-sm truncate">{conv.title}</p>
               <p className="text-xs text-gray-500">{conv.date}</p>
@@ -260,7 +126,7 @@ export default function Home() {
         <div className="p-4 border-t border-[#1e1e2e]">
           <div className="flex items-center gap-2 text-xs text-gray-400">
             <div className="w-2 h-2 rounded-full bg-green-500"></div>
-            <span>OpenAI GPT-4o verbunden</span>
+            <span>Vercel AI SDK + GPT-4o</span>
           </div>
         </div>
       </aside>
@@ -361,19 +227,11 @@ export default function Home() {
                     <p className="whitespace-pre-wrap">{message.content}</p>
                   </div>
                 </div>
-                <p
-                  className={`text-xs text-gray-500 mt-1 ${message.role === "user" ? "text-right mr-12" : "ml-12"}`}
-                >
-                  {message.createdAt?.toLocaleTimeString("de-DE", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  }) || ""}
-                </p>
               </div>
             </div>
           ))}
 
-          {isLoading && messages[messages.length - 1]?.content === "" && (
+          {isLoading && (
             <div className="flex justify-start">
               <div className="flex items-start gap-3">
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
@@ -452,7 +310,7 @@ export default function Home() {
             </div>
           </form>
           <p className="text-center text-xs text-gray-500 mt-3">
-            NeXify AI kann Fehler machen. Prüfe wichtige Informationen.
+            NeXify AI mit Vercel AI SDK - German Engineering Standards
           </p>
         </div>
       </main>

@@ -1,167 +1,185 @@
 # NeXify AI - Brain Knowledge Base
 
-**Zuletzt aktualisiert:** 2026-01-10 16:30 UTC
+**Zuletzt aktualisiert:** 2026-01-10 17:25 UTC
 
 ---
 
-## 🧠 AKTIVER KONTEXT
+## AKTIVE ARBEIT - VERCEL AI SDK MIGRATION
+
+### Entscheidung (2026-01-10)
+
+**Vercel AI Chatbot** als Basis - sauber, offiziell, erweiterbar
+
+### PROBLEM ENTDECKT (2026-01-10 17:30)
+
+**Zod 3.25.76 ist INKOMPATIBEL mit AI SDK!**
+
+Fehler:
+
+- `zod-to-json-schema` kann `ZodFirstPartyTypeKind` nicht aus `zod/v3` importieren
+- Das ist ein bekanntes Problem mit Zod 3.25+
+- AI SDK bringt Zod 3.25.76 als Abhangigkeit mit
+
+**LOSUNG:** Zod auf 3.24.x pinnen (kompatible Version)
+
+### Zweites Problem
+
+**`tw-animate-css`** nicht installiert im Dashboard (fehlt in node_modules)
+
+### Aktueller Schritt
+
+1. [DONE] Vercel AI SDK installiert (ai, @ai-sdk/react, @ai-sdk/openai)
+2. [DONE] Chat-Route migriert zu `streamText()`
+3. [DONE] Frontend migriert zu `useChat`
+4. [BLOCKED] Build failed - Zod Konflikt + tw-animate-css fehlt
+5. [NEXT] Zod fixen + tw-animate-css installieren
+
+### Wichtige Dateien die geandert werden
+
+| Datei                                  | IST                                | SOLL                                      |
+| -------------------------------------- | ---------------------------------- | ----------------------------------------- |
+| `apps/dashboard/package.json`          | Nur `openai` SDK                   | + `ai`, `@ai-sdk/react`, `@ai-sdk/openai` |
+| `apps/dashboard/app/api/chat/route.ts` | Custom Stream mit `openai`         | `streamText()` von `ai`                   |
+| `apps/dashboard/app/chat/page.tsx`     | Custom `useChat` Hook (150 Zeilen) | `useChat` von `@ai-sdk/react` (10 Zeilen) |
+
+### Backup der alten Dateien
+
+Falls Rollback notig:
+
+- `/api/chat/route.ts` - Custom OpenAI Streaming
+- `/chat/page.tsx` - Custom useChat Hook
+
+---
+
+## AKTUELLER KONTEXT
 
 ### Aktueller Status
 
-- **Deployment:** ✅ LIVE auf Vercel
+- **Deployment:** LIVE auf Vercel
 - **Landing Page:** https://dashboard-six-tawny-72.vercel.app/
 - **Chat App:** https://dashboard-six-tawny-72.vercel.app/chat
 - **Projekt:** `pascals-projects-2864de33/dashboard`
 
-### Offene Tasks
+### Technische Fakten (AKTUELL)
 
-→ Siehe `SPÄTER_TODO.md` für aufgeschobene Aufgaben
+| Komponente | Version           | Status         |
+| ---------- | ----------------- | -------------- |
+| Next.js    | 16.1.1            | OK             |
+| React      | 19.x              | OK             |
+| OpenAI SDK | 6.16.0            | OK             |
+| Zod        | NICHT installiert | Gut fur AI SDK |
+| pnpm       | 9.12.3            | Lokal OK       |
+| Node       | 20.x              | Vercel OK      |
+
+### Fruhere Zod-Probleme (GELOST?)
+
+- 2026-01-10: AI SDK hatte Zod 3.25 Konflikt
+- JETZT: Kein Zod installiert = sollte sauber funktionieren
+- PLAN: AI SDK neu installieren und testen
 
 ---
 
-## 📚 GELERNTE FAKTEN
+## CREDENTIALS (Referenz)
 
-### Projekt
-
-- **Name:** NeXify AI / Pascals Assistent
-- **Typ:** Monorepo (ursprünglich), jetzt Standalone Dashboard
-- **Haupt-App:** `apps/dashboard` (Next.js 16)
-- **Owner:** Pascal Courbois (NeXifyAI)
-
-### Technische Entscheidungen
-
-| Datum      | Entscheidung                    | Grund                     |
-| ---------- | ------------------------------- | ------------------------- |
-| 2026-01-10 | AI SDK entfernt                 | Zod 3.25 Inkompatibilität |
-| 2026-01-10 | OpenAI SDK direkt               | Stabil, keine Middleware  |
-| 2026-01-10 | npm statt pnpm für Vercel       | pnpm ERR_INVALID_THIS Bug |
-| 2026-01-10 | Einfachster Weg zuerst          | User-Regel                |
-| 2026-01-10 | Danach auf Soll-Zustand bringen | User-Regel                |
-
-### Credentials (Referenz)
-
-Vollständige Liste in `nexify-ai-assietenten-api-keys.txt`
+Vollstandige Liste in `nexify-ai-assietenten-api-keys.txt`
 
 **Wichtigste:**
 
 - Vercel Token: `Fe9LZrJxjj0819FQCqFZfrdq`
-- OpenAI API Key: In Vercel gesetzt
-- Qdrant: URL + API Key in Vercel
+- OpenAI API Key: In Vercel ENV gesetzt
+- Qdrant: URL + API Key in Vercel ENV
 - Webhook Secret: `WahphdJNfwuUYaqGG3DwMVQd`
-- GitHub Token: (siehe nexify-ai-assietenten-api-keys.txt)
 
 ---
 
-## 🔄 SESSION HISTORY
+## BRAIN SYSTEMS (Geplant)
 
-### Session 2026-01-10 (Aktuell)
+### Phase 1: Vercel AI SDK (JETZT)
 
-**Erreicht:**
+- `ai` - Core SDK
+- `@ai-sdk/react` - React Hooks (useChat, useCompletion)
+- `@ai-sdk/openai` - OpenAI Provider
 
-1. ✅ Zod/AI SDK Konflikt gelöst
-2. ✅ Legacy Code Cleanup
-3. ✅ Vercel Deployment funktioniert
-4. ✅ Landing Page erstellt
-5. ✅ Chat unter /chat verfügbar
-6. ✅ Templates geklont (landing-page, backend-elemente)
+### Phase 2: Memory/Brain
 
-**Gelernte Regeln:**
+- `@mem0/vercel-ai-provider` - Memory Layer
+- `@qdrant/js-client-rest` - Vector DB (bereits installiert!)
 
-- **EINFACHSTER WEG ZUERST** - Schnell zum Laufen bringen
-- **DANACH SOLL-ZUSTAND** - Immer, ohne Ausnahme
+### Phase 3: Tools
 
----
-
-## 📋 REGELN & PRÄFERENZEN
-
-→ Siehe `PROJEKT_REGELN.md` für vollständige Liste
-
-**Kurzfassung:**
-
-1. IST-Analyse IMMER ZUERST
-2. Einfachster Weg zuerst, dann Soll-Zustand
-3. Templates/Blueprints nutzen (Open-Source)
-4. Deutsch mit Pascal
-5. Keine unnötigen Erklärungen
-6. Schnelle, funktionierende Lösungen
+- Tool Calling via AI SDK
+- MCP Integration (Streamable HTTP)
 
 ---
 
-## 🗄️ MEMORY SYSTEMS
-
-### Lokal (Dateien)
-
-- `PROJEKT_REGELN.md` - Feste Regeln
-- `BRAIN_KNOWLEDGE.md` - Diese Datei
-- `SPÄTER_TODO.md` - Aufgeschobene Aufgaben
-- `nexify-ai-assietenten-api-keys.txt` - Alle Credentials
-- `templates/` - Geklonte Design-Templates
-
-### Online (APIs)
-
-- **Qdrant:** Vector DB für Embeddings
-  - Cluster: `f256664d-f56d-42e5-8fbd-e724b5f832bf`
-  - Endpoint: `europe-west3-0.gcp.cloud.qdrant.io`
-
----
-
-## 🎯 ZIELE
-
-### ✅ Erreicht
-
-- [x] Funktionierendes Chat UI online
-- [x] Landing Page live
-- [x] Vercel Deployment stabil
-
-### Nächste Schritte
-
-- [ ] Aus Vercel-Umgebung weiterarbeiten
-- [ ] Design-Templates einarbeiten (später)
-- [ ] Remote-Zugriff auf PC (später)
-
----
-
-## 🏗️ PROJEKTSTRUKTUR (AKTUELL)
+## PROJEKTSTRUKTUR
 
 ```
-nexify-ai-os/
+pascals-aktiver-assistent-nichts-loeschen/
 ├── apps/
-│   └── dashboard/               # ⭐ HAUPT-APP (Next.js 16)
+│   └── dashboard/               # HAUPT-APP (Next.js 16)
 │       ├── app/
 │       │   ├── page.tsx         # Landing Page
-│       │   ├── chat/page.tsx    # Chat UI
+│       │   ├── chat/page.tsx    # Chat UI [WIRD MIGRIERT]
+│       │   ├── layout.tsx
+│       │   ├── globals.css
 │       │   └── api/
-│       │       ├── chat/route.ts
+│       │       ├── chat/route.ts  # [WIRD MIGRIERT]
 │       │       ├── mcp/
-│       │       └── webhooks/vercel/
-│       ├── lib/
-│       ├── .vercel/             # Vercel CLI Config
+│       │       │   ├── route.ts
+│       │       │   ├── call/route.ts
+│       │       │   ├── tools/route.ts
+│       │       │   └── status/route.ts
+│       │       └── webhooks/vercel/route.ts
+│       ├── components/
+│       ├── public/images/
+│       ├── .vercel/
 │       ├── vercel.json
-│       └── package.json
-├── templates/                   # Design Templates (geklont)
-│   ├── landing-page/
-│   └── backend-elemente/
+│       ├── package.json
+│       ├── tsconfig.json
+│       └── tailwind.config.ts
+├── packages/                    # Leer/Skelett
+├── services/                    # MCP Services
+├── templates/                   # Design Templates
+├── knowledge/
 ├── PROJEKT_REGELN.md
-├── BRAIN_KNOWLEDGE.md
-├── SPÄTER_TODO.md              # NEU
+├── BRAIN_KNOWLEDGE.md          # DIESE DATEI
+├── SPATER_TODO.md
+├── MISSION.md
+├── ARCHITECTURE.md
 └── nexify-ai-assietenten-api-keys.txt
 ```
 
 ---
 
-## 🔧 TECH STACK
+## REGELN (Pascal's Praferenzen)
 
-| Komponente | Technologie  | Version | Status |
-| ---------- | ------------ | ------- | ------ |
-| Framework  | Next.js      | 16.1.1  | ✅     |
-| Runtime    | React        | 19.x    | ✅     |
-| Styling    | Tailwind CSS | 4.x     | ✅     |
-| AI         | OpenAI SDK   | 6.x     | ✅     |
-| Deploy     | Vercel       | -       | ✅     |
-| Package    | npm          | -       | ✅     |
+1. **IST-Analyse IMMER ZUERST** - Vor jeder Anderung prufen
+2. **EINFACHSTER WEG ZUERST** - Schnell zum Laufen bringen
+3. **DANACH SOLL-ZUSTAND** - Immer, ohne Ausnahme!
+4. **Dokumentieren** - Wissen nicht verlieren (kein Brain noch!)
+5. **Deutsch** mit Pascal
+6. **German Engineering Standards:** 99.99% uptime, <100ms, zero errors
 
-### NICHT VERWENDEN:
+---
 
-- ❌ `ai` (Vercel AI SDK) - Zod Konflikt
-- ❌ `@ai-sdk/*`
-- ❌ pnpm auf Vercel - ERR_INVALID_THIS Bug
+## SESSION HISTORY
+
+### Session 2026-01-10 (Aktuell)
+
+**Erreicht:**
+
+1. Zod/AI SDK Konflikt analysiert
+2. Legacy Code Cleanup
+3. Vercel Deployment funktioniert
+4. Landing Page + Chat live
+5. Templates geklont
+6. Entscheidung: Vercel AI Chatbot als Basis
+7. [IN PROGRESS] AI SDK Migration gestartet
+
+**Nachste Schritte nach Migration:**
+
+- Chat Persistenz (PostgreSQL)
+- Brain System (mem0 + Qdrant)
+- MCP Tool Integration
+- AI-Team Orchestration
