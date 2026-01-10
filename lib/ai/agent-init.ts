@@ -5,11 +5,13 @@ import { qdrantClient, COLLECTIONS } from "@/lib/qdrant";
 import { getSupermemory } from "@/lib/supermemory";
 import { NEXIFY_SYSTEM_PROMPT, NEXIFY_IDENTITY } from "./identity";
 import { systemPrompt } from "./prompts";
+import { LEGACY_RESOURCES } from "./legacy-resources";
 
 // Configuration for the Agent's Memory
 export const MEMORY_CONFIG = {
   openaiVectorStoreId: NEXIFY_IDENTITY.architecture.primaryBrain.id,
   qdrantClusterId: NEXIFY_IDENTITY.architecture.secondaryBrain.clusterId,
+  legacyStores: LEGACY_RESOURCES.vectorStores, // Integrate legacy vector stores
   collections: {
     primary: COLLECTIONS.MEMORY,
   },
