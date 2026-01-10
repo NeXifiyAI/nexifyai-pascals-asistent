@@ -1,117 +1,174 @@
-# NeXifyAI - AI Team Brain Knowledge Base
-**GESICHERT: ${new Date().toISOString()}**
+# NeXify AI - Brain Knowledge Base
 
-## SYSTEMSTATUS
-- **Projekt**: NeXifyAI Autonomer KI-Assistent
-- **Phase**: Build-Completion & Type-Migration (ai-sdk v4→v6)
-- **Deadline**: Heute 19:00 Uhr
-- **Autonomie**: VOLL AKTIVIERT
+**Zuletzt aktualisiert:** 2026-01-10 16:00 UTC
 
-## ABGESCHLOSSENE AUFGABEN
+---
 
-### 1. Dependency Installation ✅
-- ✅ papaparse + @types/papaparse
-- ✅ lucide-react  
-- ✅ @xyflow/react
-- ✅ shiki
-- ✅ framer-motion, cmdk, class-variance-authority, clsx, nanoid, next-themes, swr, tailwind-merge, usehooks-ts, streamdown
-- ✅ CodeMirror: @codemirror/lang-{javascript,html,css,python}, @codemirror/state, @codemirror/theme-one-dark, @codemirror/view
-- ✅ ProseMirror: prosemirror-{state,view,model,schema-basic,schema-list,inputrules,example-setup,markdown}
+## 🧠 AKTIVER KONTEXT
 
-### 2. Type-Fixes ✅
-- ✅ `components/ai-elements/confirmation.tsx` - ToolUIPart lokal definiert
-- ✅ `components/ai-elements/image.tsx` - ImageProps erweitert (mediaType, base64, uint8Array)
-- ✅ `components/ai-elements/message.tsx` - FileUIPart + UIMessage lokal definiert
-- ✅ `components/ai-elements/prompt-input.tsx` - ChatStatus + FileUIPart lokal definiert
-- ✅ `components/ai-elements/shimmer.tsx` - motion/react → framer-motion
-- ✅ `components/ai-elements/tool.tsx` - ToolUIPart vollständig definiert (input, output, errorText)
-- ✅ `components/elements/tool.tsx` - ToolUIPart vollständig definiert
-- ✅ `components/artifact-messages.tsx` - UseChatHelpers Generic entfernt
-- ✅ `components/artifact.tsx` - UseChatHelpers Generic entfernt
-- ✅ 8 Dateien: UseChatHelpers<ChatMessage> → UseChatHelpers (sed batch)
-- ✅ `components/chat.tsx` - DefaultChatTransport entfernt, useChat API vereinfacht
-- ✅ `components/create-artifact.tsx` + `data-stream-provider.tsx` - DataUIPart lokal definiert
+### Aktueller Status
 
-### 3. AI-SDK Compatibility Layer ✅
-- ✅ `lib/ai-sdk-compat.ts` erstellt mit:
-  - ExtendedUseChatHelpers (sendMessage, regenerate, resumeStream, addToolApprovalResponse)
-  - ChatStatus, FileUIPart, ToolUIPart, DataUIPart, UIMessage Types
+- **Deployment:** Vercel Monorepo Config gefixt, wartet auf Build
+- **URL:** https://nexifyai-pascals-asistent.vercel.app
+- **Letzter Commit:** `3bb8c54` - rootDirectory für Monorepo
 
-## AKTUELLE AUFGABE
-**Build-Blocker beheben**: Property 'sendMessage' does not exist on type 'UseChatHelpers'
+### Offene Tasks
 
-**NEXT STEPS**:
-1. Alle Component-Imports auf `lib/ai-sdk-compat` umstellen
-2. Build erfolgreich durchführen
-3. Git Commit + Push
-4. MCP-Server Repository erstellen
-5. MyDispatch + Cavantooo fertigstellen
+1. Vercel Deploy verifizieren
+2. Chat UI testen
+3. RAG System implementieren
 
-## PROJEKTSTRUKTUR
+---
 
-### NeXifyAI
+## 📚 GELERNTE FAKTEN
+
+### Projekt
+
+- **Name:** NeXify AI / Pascals Assistent
+- **Typ:** Monorepo mit Turbo
+- **Haupt-App:** `apps/dashboard` (Next.js 16)
+- **Owner:** Pascal
+
+### Technische Entscheidungen
+
+| Datum      | Entscheidung                     | Grund                             |
+| ---------- | -------------------------------- | --------------------------------- |
+| 2026-01-10 | AI SDK entfernt                  | Zod 3.25 Inkompatibilität         |
+| 2026-01-10 | OpenAI SDK direkt                | Stabil, keine Middleware          |
+| 2026-01-10 | rootDirectory statt buildCommand | Vercel Best Practice für Monorepo |
+
+### Credentials (Referenz, nicht Werte)
+
+- OpenAI API Key: In Vercel gesetzt
+- Qdrant: URL + API Key in Vercel
+- Webhook Secret: `WahphdJNfwuUYaqGG3DwMVQd`
+- Legacy Assistant ID: `asst_NZtoNWLUW58mWYXLXxV6xeR5`
+
+---
+
+## 🔄 SESSION HISTORY
+
+### Session 2026-01-10
+
+**Themen:**
+
+1. Zod/AI SDK Konflikt diagnostiziert und gelöst
+2. Legacy Code Cleanup (hooks, lib/ai, lib/editor)
+3. Vercel Webhook mit Signature Verification
+4. Monorepo Deployment Konfiguration
+
+**Commits:**
+
+- `09465e6` - AI SDK entfernt, Cleanup
+- `929c05e` - vercel.json functions path
+- `b6b0102` - tailwind config formatting
+- `d1dd6b2` - buildCommand/outputDirectory
+- `3bb8c54` - rootDirectory für Monorepo
+
+**Gelöste Probleme:**
+
+- Build Fehler durch fehlende AI SDK Types
+- Vercel functions pattern mismatch
+- Leere Seite (falscher .next Ordner)
+
+---
+
+## 📋 REGELN & PRÄFERENZEN
+
+→ Siehe `PROJEKT_REGELN.md` für vollständige Liste
+
+**Kurzfassung:**
+
+1. IST-Analyse IMMER ZUERST
+2. Templates/Blueprints nutzen (Open-Source)
+3. Deutsch mit Pascal
+4. Keine unnötigen Erklärungen
+5. Schnelle, funktionierende Lösungen
+
+---
+
+## 🗄️ MEMORY SYSTEMS
+
+### Lokal (Dateien)
+
+- `PROJEKT_REGELN.md` - Feste Regeln
+- `BRAIN_KNOWLEDGE.md` - Diese Datei
+- `knowledge/` - Zusätzliches Wissen
+
+### Online (APIs)
+
+- **Qdrant:** Vector DB für Embeddings
+  - Collection: `brain_memory`
+  - Types: fact, code, preference, conversation
+- **Supermemory/Postgres:** Fallback Memory Provider
+  - Tabelle: `knowledge`
+  - Felder: content, category, tags, metadata, isActive
+
+---
+
+## 🎯 ZIELE
+
+### Kurzfristig
+
+- [ ] Funktionierendes Chat UI online
+- [ ] Basis RAG mit Qdrant
+
+### Mittelfristig
+
+- [ ] MCP Server Repository
+- [ ] Erweiterte Tools (Web Search, Code Execution)
+- [ ] Besseres UI (shadcn Template)
+
+### Langfristig
+
+- [ ] Vollständig autonomer Assistent
+- [ ] Selbstlernend durch Interaktionen
+- [ ] Multi-Modal (Text, Bild, Code)
+
+---
+
+## 🏗️ PROJEKTSTRUKTUR (AKTUELL)
+
 ```
-nexifyai-pascals-assistent/
-├── app/                    # Next.js App Router
-├── components/             # UI Components
-├── artifacts/              # Artifact Handlers (code, sheet, text)
-├── lib/                    # Utilities & Helpers
-│   ├── ai-sdk-compat.ts   # AI SDK v4 Compatibility Layer
-│   └── artifacts/         # Artifact Server Logic
-├── package.json
-└── next.config.js
+nexify-ai-os/                    # Monorepo Root
+├── apps/
+│   └── dashboard/               # ⭐ HAUPT-APP (Next.js 16)
+│       ├── app/                 # App Router
+│       │   ├── page.tsx         # Chat UI (Custom useChat Hook)
+│       │   └── api/             # API Routes
+│       │       ├── chat/route.ts        # OpenAI Streaming
+│       │       ├── mcp/                 # MCP Tools
+│       │       └── webhooks/vercel/     # Vercel Events
+│       ├── lib/
+│       │   ├── qdrant.ts        # Vector DB Client
+│       │   ├── supermemory.ts   # Memory Provider Abstraction
+│       │   ├── db/              # Drizzle ORM
+│       │   └── utils.ts
+│       ├── components/          # UI Components
+│       └── vercel.json          # Functions Config
+├── packages/                    # Shared Packages (tools)
+├── knowledge/                   # Wissensdateien
+├── PROJEKT_REGELN.md           # Feste Regeln
+├── BRAIN_KNOWLEDGE.md          # Diese Datei
+└── vercel.json                  # rootDirectory: apps/dashboard
 ```
 
-### MyDispatch
-- Status: PENDING - Analyse erforderlich
-- Location: TBD
+---
 
-### Cavantooo & OpenCarBox  
-- Status: PENDING - Analyse erforderlich
-- Location: TBD
+## 🔧 TECH STACK
 
-## TECHNISCHE DETAILS
+| Komponente | Technologie      | Version  | Status           |
+| ---------- | ---------------- | -------- | ---------------- |
+| Framework  | Next.js          | 16.1.1   | ✅               |
+| Runtime    | React            | 19.x     | ✅               |
+| Styling    | Tailwind CSS     | 4.x      | ✅               |
+| AI         | OpenAI SDK       | 6.x      | ✅               |
+| Database   | Postgres/Drizzle | -        | ✅               |
+| Vector DB  | Qdrant           | -        | ⚠️ Config prüfen |
+| Auth       | NextAuth         | 5.x beta | ⚠️ Nicht aktiv   |
 
-### AI SDK Migration Strategy
-**Problem**: ai-sdk wurde von v4 auf v6 aktualisiert, aber das Projekt verwendet v4 API
-**Lösung**: 
-1. Compatibility Layer (`lib/ai-sdk-compat.ts`) als Zwischenschritt
-2. Alle fehlenden Types lokal definieren
-3. Deprecated Methods als `any` markieren für späteren Refactor
-4. TODO-Kommentare für zukünftige Migration
+### NICHT VERWENDEN:
 
-### Build-Fehler Pattern
-**Pattern**: `Type 'UseChatHelpers' is not generic`
-**Fix**: UseChatHelpers<ChatMessage> → UseChatHelpers
-
-**Pattern**: `Module '"ai"' has no exported member 'XXX'`
-**Fix**: Lokale Type-Definition oder Compatibility Layer
-
-## SSH & GITHUB
-- ✅ SSH Key: ~/.ssh/nexifyai_deploy_key (ed25519)
-- ✅ GitHub Remote: git@github.com:NeXifiyAI/nexifyai-pascals-asistent.git
-- ✅ Token: [HIDDEN]
-
-
-## MCP-SERVER ARCHITEKTUR
-```
-nexifyai-mcp-server/
-├── tools/
-│   ├── github-tool.ts      # GitHub API Integration
-│   ├── browser-tool.ts     # Playwright Browser Control
-│   ├── biome-tool.ts       # Code Formatting/Linting
-│   └── memory-tool.ts      # Qdrant Vector Memory
-├── agents/
-│   ├── code-agent.ts       # Code Generation Agent
-│   ├── research-agent.ts   # Web Research Agent
-│   └── orchestrator.ts     # Agent Coordination
-└── server.ts               # MCP Server Entry Point
-```
-
-## ZEITPLAN
-- **JETZT - 15:00**: Build fertigstellen
-- **15:00 - 16:00**: Git Commit + MCP Server Setup
-- **16:00 - 17:30**: MyDispatch fertigstellen
-- **17:30 - 19:00**: Cavantooo & OpenCarBox fertigstellen
-
-**STATUS: AUTONOMER MODUS - KEIN STOPP BIS 19:00 UHR**
+- ❌ `ai` (Vercel AI SDK)
+- ❌ `@ai-sdk/*`
+- ❌ `zod-to-json-schema`
