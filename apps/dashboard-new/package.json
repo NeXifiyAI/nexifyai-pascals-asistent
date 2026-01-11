@@ -19,7 +19,8 @@
     "docker:build": "docker build -t nexify-ai:latest .",
     "deploy": "pnpm dlx vercel --prod",
     "monitor:status": "tsx scripts/monitor-mcp-status.ts",
-    "test": "tsx --tsconfig tsconfig.json --test tests/**/*.test.ts"
+    "test": "tsx --tsconfig tsconfig.json --test tests/**/*.test.ts",
+    "validate:env": "tsx scripts/validate-env.ts"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^0.1.0",

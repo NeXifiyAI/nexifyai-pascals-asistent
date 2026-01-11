@@ -36,81 +36,72 @@ commands:
     parameters:
       app-dir:
         type: string
+      app-package:
+        type: string
+        default: ""
     steps:
-      - run: cd apps/<< parameters.app-dir >> && pnpm test
+      - run: |
+          if [ -n "<< parameters.app-package >>" ]; then
+            cd apps/<< parameters.app-dir >> && pnpm --filter << parameters.app-package >> test
+          else
+            cd apps/<< parameters.app-dir >> && pnpm test
+          fi
 
   run-lint:
     description: "Run linting for a specific app"
     parameters:
       app-dir:
         type: string
+      app-package:
+        type: string
+        default: ""
     steps:
-      - run: cd apps/<< parameters.app-dir >> && pnpm lint
+      - run: |
+          if [ -n "<< parameters.app-package >>" ]; then
+            cd apps/<< parameters.app-dir >> && pnpm --filter << parameters.app-package >> lint
+          else
+            cd apps/<< parameters.app-dir >> && pnpm lint
+          fi
 
   run-typecheck:
     description: "Run TypeScript typecheck for a specific app"
     parameters:
       app-dir:
         type: string
+      app-package:
+        type: string
+        default: ""
     steps:
-      - run: cd apps/<< parameters.app-dir >> && pnpm typecheck
+      - run: |
+          if [ -n "<< parameters.app-package >>" ]; then
+            cd apps/<< parameters.app-dir >> && pnpm --filter << parameters.app-package >> typecheck
+          else
+            cd apps/<< parameters.app-dir >> && pnpm typecheck
+          fi
 
   run-fix:
     description: "Auto-fix linting and formatting issues"
     parameters:
       app-dir:
         type: string
+      app-package:
+        type: string
+        default: ""
     steps:
-      - run: cd apps/<< parameters.app-dir >> && pnpm lint:fix && pnpm format
-
-jobs:
-  build-and-test-dashboard:
-    executor: pnpm-executor
-    steps:
-      - checkout
-      - install-deps
-      - run-lint:
-          app-dir: dashboard-new
-      - run-typecheck:
-          app-dir: dashboard-new
-      - run-tests:
-          app-dir: dashboard-new
-
-  build-and-test-mydispatch:
-    executor: pnpm-executor
-    steps:
-      - checkout
-      - install-deps
-      - run-tests:
-          app-dir: MyDispatch
-
-  build-and-test-opencarbox:
-    executor: pnpm-executor
-    steps:
-      - checkout
-      - install-deps
-      - run-tests:
-          app-dir: OpenCarBox
-
-  security-scan:
-    executor: pnpm-executor
-    steps:
-      - checkout
-      - install-deps
-      - run:
-          name: Run security audit
-          command: pnpm audit --audit-level=moderate
-
-  auto-fix:
-    executor: pnpm-executor
-    steps:
-      - checkout
-      - install-deps
-      - run-fix:
-          app-dir: dashboard-new
+      - run: |
+          if [ -n "<< parameters.app-package >>" ]; then
+            cd apps/<< parameters.app-dir >> && pnpm --filter << parameters.app-package >> lint:fix && pnpm --filter << parameters.app-package >> format
+          else
+            cd apps/<< parameters.app-dir >> && pnpm lint:fix && pnpm format
+          fi
       - run:
           name: Check for changes after auto-fix
-          command: git diff --exit-code || (echo "Changes detected, committing auto-fix" && git add . && git commit -m "Auto-fix: lint and format corrections" && git push)
+          command: |
+            if [ -n "<< parameters.app-package >>" ]; then
+              cd apps/<< parameters.app-dir >> && git diff --exit-code || (git add . && git commit -m "Auto-fix: << parameters.app-dir >> lint and format corrections" && git push)
+            else
+              cd apps/<< parameters.app-dir >> && git diff --exit-code || (git add . && git commit -m "Auto-fix: << parameters.app-dir >> lint and format corrections" && git push)
+            fi
 
   docs-deploy:
     executor: pnpm-executor
@@ -179,10 +170,25 @@ workflows:
           context: secrets
           requires:
             - security-scan
-      - auto-fix:
-          context: development
+      - auto-fix-dashboard:
           requires:
             - build-and-test-dashboard
+          filters:
+            branches:
+              only:
+                - main
+                - develop
+      - auto-fix-mydispatch:
+          requires:
+            - build-and-test-mydispatch
+          filters:
+            branches:
+              only:
+                - main
+                - develop
+      - auto-fix-opencarbox:
+          requires:
+            - build-and-test-opencarbox
           filters:
             branches:
               only:
