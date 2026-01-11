@@ -1,0 +1,124 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5.2.3
+  vercel: circleci/vercel@2.0.0
+
+executors:
+  pnpm-executor:
+    docker:
+      - image: cimg/node:18.19.0
+    resource_class: large
+    working_directory: ~/project
+    environment:
+      PNPM_HOME: /home/circleci/.pnpm
+      PATH: $PNPM_HOME:$PATH
+
+commands:
+  install-deps:
+    description: "Install dependencies using pnpm"
+    steps:
+      - restore_cache:
+          keys:
+            - pnpm-cache-{{ checksum "pnpm-lock.yaml" }}
+            - pnpm-cache-
+      - run: corepack enable pnpm
+      - run: pnpm install --frozen-lockfile
+      - save_cache:
+          key: pnpm-cache-{{ checksum "pnpm-lock.yaml" }}
+          paths:
+            - ~/.pnpm
+
+  run-tests:
+    description: "Run tests for a specific app"
+    parameters:
+      app-dir:
+        type: string
+    steps:
+      - run: cd apps/<< parameters.app-dir >> && pnpm test
+
+  run-lint:
+    description: "Run linting for a specific app"
+    parameters:
+      app-dir:
+        type: string
+    steps:
+      - run: cd apps/<< parameters.app-dir >> && pnpm lint
+
+  run-typecheck:
+    description: "Run TypeScript typecheck for a specific app"
+    parameters:
+      app-dir:
+        type: string
+    steps:
+      - run: cd apps/<< parameters.app-dir >> && pnpm typecheck
+
+jobs:
+  build-and-test-dashboard:
+    executor: pnpm-executor
+    steps:
+      - checkout
+      - install-deps
+      - run-lint:
+          app-dir: dashboard-new
+      - run-typecheck:
+          app-dir: dashboard-new
+      - run-tests:
+          app-dir: dashboard-new
+
+  build-and-test-mydispatch:
+    executor: pnpm-executor
+    steps:
+      - checkout
+      - install-deps
+      - run-tests:
+          app-dir: MyDispatch
+
+  build-and-test-opencarbox:
+    executor: pnpm-executor
+    steps:
+      - checkout
+      - install-deps
+      - run-tests:
+          app-dir: OpenCarBox
+
+  security-scan:
+    executor: pnpm-executor
+    steps:
+      - checkout
+      - install-deps
+      - run:
+          name: Run security audit
+          command: pnpm audit --audit-level=moderate
+
+  deploy-dashboard:
+    executor: pnpm-executor
+    steps:
+      - checkout
+      - install-deps
+      - vercel/deploy:
+          api-token: $VERCEL_TOKEN
+          working-directory: apps/dashboard-new
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - security-scan
+      - build-and-test-dashboard:
+          requires:
+            - security-scan
+      - build-and-test-mydispatch:
+          requires:
+            - security-scan
+      - build-and-test-opencarbox:
+          requires:
+            - security-scan
+      - deploy-dashboard:
+          requires:
+            - build-and-test-dashboard
+          filters:
+            branches:
+              only:
+                - main
+                - production
