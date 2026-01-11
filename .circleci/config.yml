@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   node: circleci/node@5.2.3
   vercel: circleci/vercel@2.0.0
+  gh-pages: peaceiris/actions-gh-pages@4.0.0
 
 executors:
   pnpm-executor:
@@ -53,6 +54,14 @@ commands:
     steps:
       - run: cd apps/<< parameters.app-dir >> && pnpm typecheck
 
+  run-fix:
+    description: "Auto-fix linting and formatting issues"
+    parameters:
+      app-dir:
+        type: string
+    steps:
+      - run: cd apps/<< parameters.app-dir >> && pnpm lint:fix && pnpm format
+
 jobs:
   build-and-test-dashboard:
     executor: pnpm-executor
@@ -91,6 +100,37 @@ jobs:
           name: Run security audit
           command: pnpm audit --audit-level=moderate
 
+  auto-fix:
+    executor: pnpm-executor
+    steps:
+      - checkout
+      - install-deps
+      - run-fix:
+          app-dir: dashboard-new
+      - run:
+          name: Check for changes after auto-fix
+          command: git diff --exit-code || (echo "Changes detected, committing auto-fix" && git add . && git commit -m "Auto-fix: lint and format corrections" && git push)
+
+  docs-deploy:
+    executor: pnpm-executor
+    steps:
+      - checkout
+      - install-deps
+      - run:
+          name: Build docs
+          command: pnpm --filter nexify-ai-dashboard build:docs || echo "No docs build script, using README"
+      - run:
+          name: Deploy docs to GitHub Pages
+          command: |
+            mkdir -p docs
+            cp README.md docs/index.md
+            cp MISSION.md docs/
+            cp ARCHITECTURE.md docs/ 2>/dev/null || true
+            # Add more docs as needed
+      - gh-pages/deploy:
+          github_token: $GITHUB_TOKEN
+          publish_dir: docs
+
   deploy-dashboard:
     executor: pnpm-executor
     steps:
@@ -114,9 +154,24 @@ workflows:
       - build-and-test-opencarbox:
           requires:
             - security-scan
-      - deploy-dashboard:
+      - auto-fix:
           requires:
             - build-and-test-dashboard
+          filters:
+            branches:
+              only:
+                - main
+                - develop
+      - docs-deploy:
+          requires:
+            - auto-fix
+          filters:
+            branches:
+              only:
+                - main
+      - deploy-dashboard:
+          requires:
+            - docs-deploy
           filters:
             branches:
               only:
