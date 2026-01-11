@@ -163,17 +163,24 @@ workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - security-scan
+      - security-scan:
+          context: secrets
       - build-and-test-dashboard:
+          context:
+            - secrets
+            - development
           requires:
             - security-scan
       - build-and-test-mydispatch:
+          context: secrets
           requires:
             - security-scan
       - build-and-test-opencarbox:
+          context: secrets
           requires:
             - security-scan
       - auto-fix:
+          context: development
           requires:
             - build-and-test-dashboard
           filters:
@@ -182,6 +189,9 @@ workflows:
                 - main
                 - develop
       - docs-deploy:
+          context:
+            - secrets
+            - production
           requires:
             - auto-fix
           filters:
@@ -189,6 +199,9 @@ workflows:
               only:
                 - main
       - deploy-dashboard:
+          context:
+            - production
+            - secrets
           requires:
             - docs-deploy
           filters:
@@ -196,17 +209,36 @@ workflows:
               only:
                 - main
                 - production
-    when: << pipeline.git.branch >> != "dependabot/**"
     jobs:
       - slack/notify:
+          context: secrets
           event: fail
           template: basic_fail_1
-          channel: $SLACK_CHANNEL
+          channel: $SLACK_WEBHOOK
           requires:
             - deploy-dashboard
       - slack/notify:
+          context: secrets
           event: pass
           template: basic_success_1
-          channel: $SLACK_CHANNEL
+          channel: $SLACK_WEBHOOK
           requires:
             - deploy-dashboard
+
+  schedule-builds:
+    triggers:
+      - schedule:
+          cron: "0 6 * * *"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - security-scan:
+          context: secrets
+      - build-and-test-dashboard:
+          context:
+            - secrets
+            - development
+          requires:
+            - security-scan
