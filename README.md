@@ -3,6 +3,7 @@
 **Supreme Autonomous General Intelligence - German Engineering Standards**
 
 Ein vollständiger MCP (Model Context Protocol) Server für das NeXify AI Ökosystem mit:
+
 - Multi-AI Provider Routing (OpenAI, DeepSeek, OpenRouter, Hugging Face)
 - Qdrant Vector Database Integration (Dual-Brain Architecture)
 - Self-Extension Capabilities
@@ -37,6 +38,7 @@ Ein vollständiger MCP (Model Context Protocol) Server für das NeXify AI Ökosy
 **Neu:** [Vollständiger GitHub Dokumentations-Leitfaden](./GITHUB_DOKUMENTATION.md) - Erfahren Sie, wo und wie Sie Projektdokumentation in GitHub finden und nutzen (Wiki, Pages, README, docs/).
 
 Weitere Dokumentation:
+
 - [Architektur-Details](./ARCHITECTURE.md)
 - [Mission & Vision](./MISSION.md)
 - [Brain Knowledge System](./BRAIN_KNOWLEDGE.md)
@@ -65,50 +67,56 @@ npm run build
 ## 🔧 Verfügbare Tools
 
 ### AI Provider Tools
-| Tool | Beschreibung |
-|------|-------------|
-| `ask_openai` | GPT-4 Turbo für komplexe Reasoning-Tasks |
-| `ask_deepseek` | DeepSeek für Code-Generierung (kosteneffizient) |
-| `ask_openrouter` | Multi-Model Routing via OpenRouter |
-| `ask_huggingface` | Spezialisierte Hugging Face Modelle |
-| `smart_ask` | Automatische Modell-Auswahl nach Task-Typ |
+
+| Tool              | Beschreibung                                    |
+| ----------------- | ----------------------------------------------- |
+| `ask_openai`      | GPT-4 Turbo für komplexe Reasoning-Tasks        |
+| `ask_deepseek`    | DeepSeek für Code-Generierung (kosteneffizient) |
+| `ask_openrouter`  | Multi-Model Routing via OpenRouter              |
+| `ask_huggingface` | Spezialisierte Hugging Face Modelle             |
+| `smart_ask`       | Automatische Modell-Auswahl nach Task-Typ       |
 
 ### Qdrant Vector Database
-| Tool | Beschreibung |
-|------|-------------|
-| `qdrant_search` | Semantische Suche in einer Collection |
-| `qdrant_upsert` | Vektoren einfügen/aktualisieren |
-| `qdrant_list_collections` | Alle Collections auflisten |
-| `qdrant_create_collection` | Neue Collection erstellen |
-| `qdrant_multi_search` | Dual-Brain Suche über mehrere Collections |
+
+| Tool                       | Beschreibung                              |
+| -------------------------- | ----------------------------------------- |
+| `qdrant_search`            | Semantische Suche in einer Collection     |
+| `qdrant_upsert`            | Vektoren einfügen/aktualisieren           |
+| `qdrant_list_collections`  | Alle Collections auflisten                |
+| `qdrant_create_collection` | Neue Collection erstellen                 |
+| `qdrant_multi_search`      | Dual-Brain Suche über mehrere Collections |
 
 ### GitHub Tools
-| Tool | Beschreibung |
-|------|-------------|
-| `github_get_file` | Datei aus Repository lesen |
-| `github_update_file` | Datei erstellen/aktualisieren |
-| `github_list_files` | Dateien im Repository auflisten |
+
+| Tool                 | Beschreibung                    |
+| -------------------- | ------------------------------- |
+| `github_get_file`    | Datei aus Repository lesen      |
+| `github_update_file` | Datei erstellen/aktualisieren   |
+| `github_list_files`  | Dateien im Repository auflisten |
 
 ### Self-Extension Tools
-| Tool | Beschreibung |
-|------|-------------|
-| `register_tool` | Neues Tool dynamisch registrieren |
-| `list_tools` | Alle Tools auflisten |
-| `remove_tool` | Dynamisches Tool entfernen |
-| `add_api_integration` | Neue API-Integration hinzufügen |
+
+| Tool                  | Beschreibung                      |
+| --------------------- | --------------------------------- |
+| `register_tool`       | Neues Tool dynamisch registrieren |
+| `list_tools`          | Alle Tools auflisten              |
+| `remove_tool`         | Dynamisches Tool entfernen        |
+| `add_api_integration` | Neue API-Integration hinzufügen   |
 
 ### Code & Knowledge Tools
-| Tool | Beschreibung |
-|------|-------------|
-| `generate_code` | Code generieren (verwendet DeepSeek Coder) |
-| `analyze_code` | Code analysieren (Bugs, Security, Performance) |
-| `store_knowledge` | Wissen in Dual-Brain speichern |
-| `query_knowledge` | Wissensbasis durchsuchen |
+
+| Tool              | Beschreibung                                   |
+| ----------------- | ---------------------------------------------- |
+| `generate_code`   | Code generieren (verwendet DeepSeek Coder)     |
+| `analyze_code`    | Code analysieren (Bugs, Security, Performance) |
+| `store_knowledge` | Wissen in Dual-Brain speichern                 |
+| `query_knowledge` | Wissensbasis durchsuchen                       |
 
 ### System Tools
-| Tool | Beschreibung |
-|------|-------------|
-| `system_status` | System-Status und Health Metrics |
+
+| Tool                | Beschreibung                         |
+| ------------------- | ------------------------------------ |
+| `system_status`     | System-Status und Health Metrics     |
 | `ask_nexify_master` | Haupt-Endpoint für NeXify AI Queries |
 
 ## 🌐 API Endpoints
@@ -149,6 +157,17 @@ Content-Type: application/json
 }
 ```
 
+## 🩺 Monitoring & Health Checks
+
+Nutze den integrierten Health-Check, um `/api/mcp/status` automatisiert zu überwachen:
+
+```bash
+# URL überschreibbar via MCP_STATUS_URL, Timeout via MCP_STATUS_TIMEOUT (ms)
+pnpm --filter nexify-ai-dashboard run monitor:status
+```
+
+Der Check schlägt fehl (Exit Code ≠ 0), sobald der Endpoint nicht erreichbar ist, kein `healthy` Flag liefert oder ein Timeout eintritt. So lässt sich der Status bequem in Cronjobs, CI oder externe Monitoring-Systeme integrieren.
+
 ## 🔐 Authentifizierung
 
 Optional Bearer Token Authentication:
@@ -173,7 +192,7 @@ Der Server implementiert die Dual-Brain Architektur:
 await toolHandlers.qdrant_multi_search({
   query: "How to implement RAG?",
   collections: ["semantic_memory", "episodic_memory", "procedural_memory"],
-  limit: 3
+  limit: 3,
 });
 ```
 
@@ -189,9 +208,9 @@ await toolHandlers.register_tool({
     properties: {
       a: { type: "number" },
       b: { type: "number" },
-      op: { type: "string" }
+      op: { type: "string" },
     },
-    required: ["a", "b", "op"]
+    required: ["a", "b", "op"],
   },
   handler_code: `
     const { a, b, op } = args;
@@ -202,7 +221,7 @@ await toolHandlers.register_tool({
       case '/': return a / b;
       default: return 'Unknown operation';
     }
-  `
+  `,
 });
 ```
 
@@ -218,15 +237,15 @@ await toolHandlers.add_api_integration({
       name: "current",
       method: "GET",
       path: "/v1/current",
-      description: "Get current weather"
+      description: "Get current weather",
     },
     {
       name: "forecast",
       method: "GET",
       path: "/v1/forecast",
-      description: "Get weather forecast"
-    }
-  ]
+      description: "Get weather forecast",
+    },
+  ],
 });
 
 // Dann verwendbar als:
@@ -235,16 +254,16 @@ await toolHandlers.weather_current({ params: { city: "Berlin" } });
 
 ## 📊 Environment Variables
 
-| Variable | Beschreibung |
-|----------|-------------|
-| `OPENAI_API_KEY` | OpenAI API Key |
-| `OPENROUTER_API_KEY` | OpenRouter API Key |
-| `DEEPSEEK_API_KEY` | DeepSeek API Key |
-| `HUGGINGFACE_API_KEY` | Hugging Face API Key |
-| `QDRANT_URL` | Qdrant Cluster URL |
-| `QDRANT_API_KEY` | Qdrant API Key |
-| `GITHUB_TOKEN` | GitHub Personal Access Token |
-| `AUTH_SECRET` | Optional: Bearer Token für API-Auth |
+| Variable              | Beschreibung                        |
+| --------------------- | ----------------------------------- |
+| `OPENAI_API_KEY`      | OpenAI API Key                      |
+| `OPENROUTER_API_KEY`  | OpenRouter API Key                  |
+| `DEEPSEEK_API_KEY`    | DeepSeek API Key                    |
+| `HUGGINGFACE_API_KEY` | Hugging Face API Key                |
+| `QDRANT_URL`          | Qdrant Cluster URL                  |
+| `QDRANT_API_KEY`      | Qdrant API Key                      |
+| `GITHUB_TOKEN`        | GitHub Personal Access Token        |
+| `AUTH_SECRET`         | Optional: Bearer Token für API-Auth |
 
 ## 🚀 Deployment auf Vercel
 
