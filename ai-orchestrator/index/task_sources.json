@@ -1,0 +1,18 @@
+{
+  "sources": [
+    {
+      "project": "MyDispatch",
+      "priority": "CRITICAL",
+      "issues": [
+        "TypeScript build errors (ignored in next.config.js)",
+        "Missing Payment Integration",
+        "Missing Notification System"
+      ]
+    },
+    {
+      "project": "OpenCarBox",
+      "priority": "MEDIUM",
+      "issues": ["Dependency updates", "Documentation sync"]
+    }
+  ]
+}

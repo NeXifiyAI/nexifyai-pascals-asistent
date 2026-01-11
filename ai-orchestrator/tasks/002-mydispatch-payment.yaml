@@ -1,0 +1,11 @@
+id: TASK-002
+project: MyDispatch
+title: Implement Stripe Payment Infrastructure
+priority: HIGH
+status: NEW
+type: FEATURE
+dependencies: [TASK-001]
+specs:
+  - Schema: Create 'payments' table
+  - API: /api/webhooks/stripe
+  - UI: Checkout Component

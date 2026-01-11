@@ -9,16 +9,23 @@
   },
   "devDependencies": {
     "prettier": "latest",
+    "tsx": "^4.21.0",
     "turbo": "^2.3.3"
   },
   "workspaces": [
     "apps/*",
     "packages/*",
-    "services/*"
+    "services/*",
+    "clients/*"
   ],
   "dependencies": {
+    "@qdrant/js-client-rest": "^1.16.2",
     "@types/d3-scale": "^4.0.9",
-    "@types/d3-shape": "^3.1.7"
+    "@types/d3-shape": "^3.1.7",
+    "@vercel/otel": "^1.14.0",
+    "next-auth": "^4.24.8",
+    "openai": "^6.16.0",
+    "supermemory": "^4.0.0"
   },
   "pnpm": {
     "overrides": {
