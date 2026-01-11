@@ -30,7 +30,7 @@ body {
   /* Ring */
   --ring: 224 76% 48%;
 
-  @variant dark {
+  .dark & {
     --primary: 221 83% 53%;
     --primary-foreground: 0 0% 100%;
     --accent: 48 96% 53%;
@@ -131,7 +131,7 @@ body {
   --primary: var(--color-neutral-600);
   --primary-foreground: var(--color-neutral-50);
 
-  @variant dark {
+  .dark & {
     --primary: var(--color-neutral-500);
     --primary-foreground: var(--color-neutral-50);
   }
@@ -142,7 +142,7 @@ body {
   --primary: 224 76% 48%;
   --primary-foreground: 0 0% 100%;
 
-  @variant dark {
+  .dark & {
     --primary: 221 83% 53%;
     --primary-foreground: 0 0% 100%;
   }
@@ -153,7 +153,7 @@ body {
   --primary: 158 64% 42%;
   --primary-foreground: 0 0% 100%;
 
-  @variant dark {
+  .dark & {
     --primary: 158 64% 52%;
     --primary-foreground: 0 0% 100%;
   }
@@ -164,7 +164,7 @@ body {
   --primary: 45 93% 47%;
   --primary-foreground: 224 71% 4%;
 
-  @variant dark {
+  .dark & {
     --primary: 48 96% 53%;
     --primary-foreground: 224 71% 4%;
   }
@@ -176,7 +176,7 @@ body {
   --primary: var(--color-neutral-600);
   --primary-foreground: var(--color-neutral-50);
 
-  @variant dark {
+  .dark & {
     --primary: var(--color-neutral-500);
     --primary-foreground: var(--color-neutral-50);
   }
