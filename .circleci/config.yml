@@ -4,6 +4,7 @@ orbs:
   node: circleci/node@5.2.3
   vercel: circleci/vercel@2.0.0
   gh-pages: peaceiris/actions-gh-pages@4.0.0
+  slack: circleci/slack@4.12.5
 
 executors:
   pnpm-executor:
@@ -177,3 +178,17 @@ workflows:
               only:
                 - main
                 - production
+    when: << pipeline.git.branch >> != "dependabot/**"
+    jobs:
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+          channel: $SLACK_CHANNEL
+          requires:
+            - deploy-dashboard
+      - slack/notify:
+          event: pass
+          template: basic_success_1
+          channel: $SLACK_CHANNEL
+          requires:
+            - deploy-dashboard
