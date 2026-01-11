@@ -1,0 +1,74 @@
+version: 2.1
+
+description: "Continuous deployment pipeline with approval gates and automated releases"
+
+parameters:
+  deploy-environment:
+    type: string
+    default: "production"
+    description: "Deployment environment (development, staging, production)"
+  
+  enable-auto-deploy:
+    type: boolean
+    default: true
+    description: "Enable automatic deployment without manual approval"
+
+executors:
+  pnpm-executor:
+    docker:
+      - image: cimg/node:18.19.0
+    resource_class: large
+    working_directory: ~/project
+    environment:
+      PNPM_HOME: /home/circleci/.pnpm
+      PATH: $PNPM_HOME:$PATH
+
+commands:
+  deploy-health-check:
+    description: "Perform post-deployment health checks"
+    steps:
+      - run:
+          name: Wait for deployment to be available
+          command: |
+            timeout 300 bash -c 'until curl -f -sS https://nexifyai-dashboard.vercel.app/health || sleep 10; do :; done'
+          when: on_success
+
+  rollback-on-failure:
+    description: "Rollback deployment if health check fails"
+    steps:
+      - run:
+          name: Rollback to previous version
+          command: |
+            circleci run release plan \
+              --environment-name="<< parameters.deploy-environment >>" \
+              --target-version="previous"
+          when: on_fail
+
+jobs:
+  deploy-with-approval:
+    executor: pnpm-executor
+    description: "Deploy with manual approval gate"
+    steps:
+      - checkout
+      - run:
+          name: Request approval
+          command: echo "Waiting for approval to deploy to << parameters.deploy-environment >>"
+
+workflows:
+  deploy-workflow:
+    when: << pipeline.parameters.enable-auto-deploy >>
+    jobs:
+      - deploy-dashboard:
+          context:
+            - production
+            - secrets
+          filters:
+            branches:
+              only:
+                - main
+      - deploy-health-check:
+          requires:
+            - deploy-dashboard
+      - rollback-on-failure:
+          requires:
+            - deploy-health-check

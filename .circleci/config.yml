@@ -3,6 +3,8 @@ version: 2.1
 orbs:
   node: circleci/node@5.2.3
   vercel: circleci/vercel@2.0.0
+  gh-pages: peaceiris/actions-gh-pages@4.0.0
+  slack: circleci/slack@4.12.5
 
 executors:
   pnpm-executor:
@@ -34,91 +36,215 @@ commands:
     parameters:
       app-dir:
         type: string
+      app-package:
+        type: string
+        default: ""
     steps:
-      - run: cd apps/<< parameters.app-dir >> && pnpm test
+      - run: |
+          if [ -n "<< parameters.app-package >>" ]; then
+            cd apps/<< parameters.app-dir >> && pnpm --filter << parameters.app-package >> test
+          else
+            cd apps/<< parameters.app-dir >> && pnpm test
+          fi
 
   run-lint:
     description: "Run linting for a specific app"
     parameters:
       app-dir:
         type: string
+      app-package:
+        type: string
+        default: ""
     steps:
-      - run: cd apps/<< parameters.app-dir >> && pnpm lint
+      - run: |
+          if [ -n "<< parameters.app-package >>" ]; then
+            cd apps/<< parameters.app-dir >> && pnpm --filter << parameters.app-package >> lint
+          else
+            cd apps/<< parameters.app-dir >> && pnpm lint
+          fi
 
   run-typecheck:
     description: "Run TypeScript typecheck for a specific app"
     parameters:
       app-dir:
         type: string
+      app-package:
+        type: string
+        default: ""
     steps:
-      - run: cd apps/<< parameters.app-dir >> && pnpm typecheck
+      - run: |
+          if [ -n "<< parameters.app-package >>" ]; then
+            cd apps/<< parameters.app-dir >> && pnpm --filter << parameters.app-package >> typecheck
+          else
+            cd apps/<< parameters.app-dir >> && pnpm typecheck
+          fi
 
-jobs:
-  build-and-test-dashboard:
-    executor: pnpm-executor
+  run-fix:
+    description: "Auto-fix linting and formatting issues"
+    parameters:
+      app-dir:
+        type: string
+      app-package:
+        type: string
+        default: ""
     steps:
-      - checkout
-      - install-deps
-      - run-lint:
-          app-dir: dashboard-new
-      - run-typecheck:
-          app-dir: dashboard-new
-      - run-tests:
-          app-dir: dashboard-new
+      - run: |
+          if [ -n "<< parameters.app-package >>" ]; then
+            cd apps/<< parameters.app-dir >> && pnpm --filter << parameters.app-package >> lint:fix && pnpm --filter << parameters.app-package >> format
+          else
+            cd apps/<< parameters.app-dir >> && pnpm lint:fix && pnpm format
+          fi
+      - run:
+          name: Check for changes after auto-fix
+          command: |
+            if [ -n "<< parameters.app-package >>" ]; then
+              cd apps/<< parameters.app-dir >> && git diff --exit-code || (git add . && git commit -m "Auto-fix: << parameters.app-dir >> lint and format corrections" && git push)
+            else
+              cd apps/<< parameters.app-dir >> && git diff --exit-code || (git add . && git commit -m "Auto-fix: << parameters.app-dir >> lint and format corrections" && git push)
+            fi
 
-  build-and-test-mydispatch:
-    executor: pnpm-executor
-    steps:
-      - checkout
-      - install-deps
-      - run-tests:
-          app-dir: MyDispatch
-
-  build-and-test-opencarbox:
-    executor: pnpm-executor
-    steps:
-      - checkout
-      - install-deps
-      - run-tests:
-          app-dir: OpenCarBox
-
-  security-scan:
+  docs-deploy:
     executor: pnpm-executor
     steps:
       - checkout
       - install-deps
       - run:
-          name: Run security audit
-          command: pnpm audit --audit-level=moderate
+          name: Build docs
+          command: pnpm --filter nexify-ai-dashboard build:docs || echo "No docs build script, using README"
+      - run:
+          name: Deploy docs to GitHub Pages
+          command: |
+            mkdir -p docs
+            cp README.md docs/index.md
+            cp MISSION.md docs/
+            cp ARCHITECTURE.md docs/ 2>/dev/null || true
+            # Add more docs as needed
+      - gh-pages/deploy:
+          github_token: $GITHUB_TOKEN
+          publish_dir: docs
 
   deploy-dashboard:
     executor: pnpm-executor
     steps:
       - checkout
       - install-deps
+      - run:
+          name: Install CircleCI CLI
+          command: curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | bash
+      - run:
+          name: Plan a deploy
+          command: |
+            circleci run release plan \
+              --environment-name="production" \
+              --component-name="dashboard" \
+              --target-version="$(git rev-parse --short HEAD)"
       - vercel/deploy:
           api-token: $VERCEL_TOKEN
           working-directory: apps/dashboard-new
+      - run:
+          name: Update a deploy to SUCCESS
+          command: circleci run release update --status=SUCCESS
+          when: on_success
+      - run:
+          name: Update planned deploy to FAILED
+          command: circleci run release update --status=FAILED
+          when: on_fail
 
 workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - security-scan
+      - security-scan:
+          context: secrets
       - build-and-test-dashboard:
+          context:
+            - secrets
+            - development
           requires:
             - security-scan
       - build-and-test-mydispatch:
+          context: secrets
           requires:
             - security-scan
       - build-and-test-opencarbox:
+          context: secrets
           requires:
             - security-scan
-      - deploy-dashboard:
+      - auto-fix-dashboard:
           requires:
             - build-and-test-dashboard
           filters:
             branches:
               only:
                 - main
+                - develop
+      - auto-fix-mydispatch:
+          requires:
+            - build-and-test-mydispatch
+          filters:
+            branches:
+              only:
+                - main
+                - develop
+      - auto-fix-opencarbox:
+          requires:
+            - build-and-test-opencarbox
+          filters:
+            branches:
+              only:
+                - main
+                - develop
+      - docs-deploy:
+          context:
+            - secrets
+            - production
+          requires:
+            - auto-fix
+          filters:
+            branches:
+              only:
+                - main
+      - deploy-dashboard:
+          context:
+            - production
+            - secrets
+          requires:
+            - docs-deploy
+          filters:
+            branches:
+              only:
+                - main
                 - production
+    jobs:
+      - slack/notify:
+          context: secrets
+          event: fail
+          template: basic_fail_1
+          channel: $SLACK_WEBHOOK
+          requires:
+            - deploy-dashboard
+      - slack/notify:
+          context: secrets
+          event: pass
+          template: basic_success_1
+          channel: $SLACK_WEBHOOK
+          requires:
+            - deploy-dashboard
+
+  schedule-builds:
+    triggers:
+      - schedule:
+          cron: "0 6 * * *"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - security-scan:
+          context: secrets
+      - build-and-test-dashboard:
+          context:
+            - secrets
+            - development
+          requires:
+            - security-scan

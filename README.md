@@ -1,5 +1,7 @@
 # 🚀 NeXify AI MCP Server
 
+[![CI](https://github.com/NeXifiyAI/nexifyai-pascals-asistent/actions/workflows/ci.yml/badge.svg)](https://github.com/NeXifiyAI/nexifyai-pascals-asistent/actions/workflows/ci.yml)
+
 **Supreme Autonomous General Intelligence - German Engineering Standards**
 
 Ein vollständiger MCP (Model Context Protocol) Server für das NeXify AI Ökosystem mit:
