@@ -137,9 +137,27 @@ jobs:
     steps:
       - checkout
       - install-deps
+      - run:
+          name: Install CircleCI CLI
+          command: curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | bash
+      - run:
+          name: Plan a deploy
+          command: |
+            circleci run release plan \
+              --environment-name="production" \
+              --component-name="dashboard" \
+              --target-version="$(git rev-parse --short HEAD)"
       - vercel/deploy:
           api-token: $VERCEL_TOKEN
           working-directory: apps/dashboard-new
+      - run:
+          name: Update a deploy to SUCCESS
+          command: circleci run release update --status=SUCCESS
+          when: on_success
+      - run:
+          name: Update planned deploy to FAILED
+          command: circleci run release update --status=FAILED
+          when: on_fail
 
 workflows:
   version: 2
