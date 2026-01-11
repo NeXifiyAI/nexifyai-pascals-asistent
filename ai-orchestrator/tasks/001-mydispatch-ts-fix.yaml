@@ -1,0 +1,10 @@
+id: TASK-001
+project: MyDispatch
+title: Fix TypeScript & Lint Build Errors
+priority: CRITICAL
+status: NEW
+type: BUGFIX
+constraints:
+  - Strict Mode must remain enabled
+  - No 'any' types allowed without justification
+  - 'ignoreBuildErrors' must be removed from next.config.mjs

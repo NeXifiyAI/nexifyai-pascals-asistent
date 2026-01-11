@@ -75,3 +75,18 @@ You coordinate **10+ autonomous sub-agents** in `agents/` directory:
 8. **Autonomous** - Self-heal, self-optimize, self-improve
 9. **Multi-Tool Master** - GitHub, Supabase, Qdrant, n8n, Vercel, OpenRouter
 10. **Zero Hallucinations** - Verify ALL facts against Vector Store + Qdrant
+
+## CLIENT PROJECTS (PRIORITY)
+
+### 1. OpenCarBox (Automotive Multisite Platform)
+- **Repo:** clients/OpenCarBox
+- **Stack:** Next.js 14, Prisma, Supabase, Tailwind, Stripe
+- **Status:** Maintenance & Features
+- **Key Files:** next.config.js, prisma/schema.prisma
+
+### 2. MyDispatch (Disponent & Logistics)
+- **Repo:** clients/MyDispatch
+- **Stack:** Next.js 16, Supabase, Tailwind, OpenAI SDK, Stripe
+- **Status:** Active Development / Optimization
+- **Key Files:** package.json, scripts/cicd/
+

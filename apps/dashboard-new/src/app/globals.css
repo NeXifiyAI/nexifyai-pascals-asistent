@@ -1,90 +1,751 @@
+/* ============================================================
+   NEXIFY AI - PREMIUM DESIGN SYSTEM
+   Edel | Hochwertig | Qualität | WoW-Effekt
+   ============================================================
+   
+   FARBPHILOSOPHIE:
+   - Primär: Tiefes Königsblau mit Goldakzenten → Vertrauen & Premium
+   - Sekundär: Elegantes Silber/Platin → Technologie & Präzision
+   - Akzent: Warmes Gold/Amber → Exklusivität & Wert
+   - Backgrounds: Tiefe dunkle Töne → Eleganz & Fokus
+   
+   ============================================================ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @import "tw-animate-css";
 
-@import "./theme.css";
+/* ============================================================
+   PREMIUM COLOR PALETTE
+   ============================================================ */
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* --------------------------------------------------------
+     BRAND COLORS - Premium Blue & Gold
+     -------------------------------------------------------- */
+
+  /* Primary: Royal Blue - Vertrauen, Kompetenz, Premium */
+  --nexify-primary: 224 76% 48%; /* #2563eb → Deep Royal Blue */
+  --nexify-primary-light: 221 83% 53%; /* #3b82f6 → Bright Blue */
+  --nexify-primary-dark: 226 71% 40%; /* #1e40af → Navy */
+  --nexify-primary-glow: 217 91% 60%; /* Glow effect */
+
+  /* Accent: Luxurious Gold - Exklusivität, Wert, Premium */
+  --nexify-gold: 45 93% 47%; /* #d4a00a → Rich Gold */
+  --nexify-gold-light: 48 96% 53%; /* #eab308 → Bright Gold */
+  --nexify-gold-dark: 43 96% 40%; /* #a16207 → Deep Gold */
+
+  /* Secondary: Platinum Silver - Technologie, Präzision */
+  --nexify-silver: 220 14% 71%; /* #9ca3af → Platinum */
+  --nexify-silver-light: 220 13% 91%; /* #e5e7eb → Light Silver */
+  --nexify-silver-dark: 220 9% 46%; /* #6b7280 → Gunmetal */
+
+  /* Success/Status Colors - Elegant variants */
+  --nexify-success: 158 64% 42%; /* #10b981 → Emerald */
+  --nexify-warning: 38 92% 50%; /* #f59e0b → Amber */
+  --nexify-error: 0 72% 51%; /* #dc2626 → Ruby */
+  --nexify-info: 199 89% 48%; /* #0ea5e9 → Sapphire */
+
+  /* --------------------------------------------------------
+     SURFACE COLORS - Light Mode
+     -------------------------------------------------------- */
+  --background: 220 33% 98%; /* Off-white with blue tint */
+  --foreground: 224 71% 4%; /* Near black */
+  --card: 0 0% 100%; /* Pure white */
+  --card-foreground: 224 71% 4%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 224 71% 4%;
+
+  /* Primary mappings */
+  --primary: var(--nexify-primary);
+  --primary-foreground: 0 0% 100%;
+
+  /* Secondary mappings */
+  --secondary: 220 14% 96%;
+  --secondary-foreground: 220 9% 26%;
+
+  /* Muted */
+  --muted: 220 14% 96%;
+  --muted-foreground: 220 9% 46%;
+
+  /* Accent - Gold */
+  --accent: var(--nexify-gold);
+  --accent-foreground: 224 71% 4%;
+
+  /* Destructive */
+  --destructive: var(--nexify-error);
+  --destructive-foreground: 0 0% 100%;
+
+  /* Borders & Inputs */
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: var(--nexify-primary);
+
+  /* --------------------------------------------------------
+     PREMIUM GRADIENTS
+     -------------------------------------------------------- */
+  --gradient-premium: linear-gradient(
+    135deg,
+    hsl(var(--nexify-primary)) 0%,
+    hsl(var(--nexify-primary-light)) 50%,
+    hsl(var(--nexify-gold)) 100%
+  );
+
+  --gradient-gold: linear-gradient(
+    135deg,
+    hsl(var(--nexify-gold-dark)) 0%,
+    hsl(var(--nexify-gold)) 50%,
+    hsl(var(--nexify-gold-light)) 100%
+  );
+
+  --gradient-royal: linear-gradient(
+    135deg,
+    hsl(var(--nexify-primary-dark)) 0%,
+    hsl(var(--nexify-primary)) 100%
+  );
+
+  --gradient-surface: linear-gradient(
+    180deg,
+    hsl(220 33% 98%) 0%,
+    hsl(220 33% 96%) 100%
+  );
+
+  /* --------------------------------------------------------
+     SHADOWS - Luxurious depth
+     -------------------------------------------------------- */
+  --shadow-premium-sm:
+    0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02);
+  --shadow-premium-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
+  --shadow-premium-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.03),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
+  --shadow-premium-xl:
+    0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
+  --shadow-glow-primary:
+    0 0 20px -5px hsla(var(--nexify-primary), 0.3),
+    0 0 40px -10px hsla(var(--nexify-primary), 0.2);
+  --shadow-glow-gold:
+    0 0 20px -5px hsla(var(--nexify-gold), 0.3),
+    0 0 40px -10px hsla(var(--nexify-gold), 0.2);
+
+  /* --------------------------------------------------------
+     TYPOGRAPHY
+     -------------------------------------------------------- */
+  --font-sans:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: "Plus Jakarta Sans", var(--font-sans);
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+
+  /* --------------------------------------------------------
+     SPACING & RADIUS
+     -------------------------------------------------------- */
+  --radius: 0.75rem;
+  --radius-sm: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+
+  /* --------------------------------------------------------
+     ANIMATIONS
+     -------------------------------------------------------- */
+  --transition-fast: 150ms;
+  --transition-normal: 250ms;
+  --transition-slow: 400ms;
+  --ease-premium: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-elegant: cubic-bezier(0.23, 1, 0.32, 1);
+
+  /* --------------------------------------------------------
+     SIDEBAR
+     -------------------------------------------------------- */
+  --sidebar: 0 0% 100%;
+  --sidebar-foreground: 224 71% 4%;
+  --sidebar-primary: var(--nexify-primary);
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 14% 96%;
+  --sidebar-accent-foreground: 224 71% 4%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: var(--nexify-primary);
+
+  /* --------------------------------------------------------
+     CHARTS
+     -------------------------------------------------------- */
+  --chart-1: var(--nexify-primary);
+  --chart-2: var(--nexify-gold);
+  --chart-3: var(--nexify-success);
+  --chart-4: 262 83% 58%; /* Purple */
+  --chart-5: var(--nexify-info);
 }
 
+/* ============================================================
+   DARK MODE - Elegant & Sophisticated
+   ============================================================ */
+
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.269 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.371 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.439 0 0);
+  /* Surfaces - Deep, Rich Backgrounds */
+  --background: 224 71% 4%; /* Near black with blue */
+  --foreground: 220 13% 95%; /* Off-white */
+  --card: 222 47% 8%; /* Dark card */
+  --card-foreground: 220 13% 95%;
+  --popover: 222 47% 10%;
+  --popover-foreground: 220 13% 95%;
+
+  /* Primary stays vibrant */
+  --primary: var(--nexify-primary-light);
+  --primary-foreground: 0 0% 100%;
+
+  /* Secondary - Darker */
+  --secondary: 222 47% 14%;
+  --secondary-foreground: 220 13% 95%;
+
+  /* Muted */
+  --muted: 222 47% 14%;
+  --muted-foreground: 220 9% 60%;
+
+  /* Accent - Gold pops on dark */
+  --accent: var(--nexify-gold);
+  --accent-foreground: 224 71% 4%;
+
+  /* Borders */
+  --border: 222 47% 18%;
+  --input: 222 47% 18%;
+  --ring: var(--nexify-primary-light);
+
+  /* Shadows - Glow effect on dark */
+  --shadow-premium-sm:
+    0 1px 2px 0 rgba(0, 0, 0, 0.3),
+    0 0 8px -2px hsla(var(--nexify-primary), 0.1);
+  --shadow-premium-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.4),
+    0 0 12px -3px hsla(var(--nexify-primary), 0.15);
+  --shadow-premium-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.4),
+    0 0 20px -5px hsla(var(--nexify-primary), 0.2);
+  --shadow-glow-primary:
+    0 0 30px -5px hsla(var(--nexify-primary-light), 0.4),
+    0 0 60px -15px hsla(var(--nexify-primary), 0.3);
+  --shadow-glow-gold:
+    0 0 30px -5px hsla(var(--nexify-gold), 0.4),
+    0 0 60px -15px hsla(var(--nexify-gold), 0.3);
+
+  /* Sidebar */
+  --sidebar: 222 47% 6%;
+  --sidebar-foreground: 220 13% 95%;
+  --sidebar-primary: var(--nexify-primary-light);
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 222 47% 12%;
+  --sidebar-accent-foreground: 220 13% 95%;
+  --sidebar-border: 222 47% 16%;
+  --sidebar-ring: var(--nexify-primary-light);
+
+  /* Charts */
+  --chart-1: var(--nexify-primary-light);
+  --chart-2: var(--nexify-gold-light);
+  --chart-3: 158 64% 52%; /* Brighter emerald */
+  --chart-4: 262 83% 68%; /* Brighter purple */
+  --chart-5: 199 89% 58%; /* Brighter sapphire */
 }
+
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
+
+  html {
+    @apply antialiased;
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1,
+      "ss01" 1;
+    @apply overscroll-none;
+  }
+
+  /* Premium Selection Color */
+  ::selection {
+    background: hsla(var(--nexify-primary), 0.2);
+    color: hsl(var(--foreground));
+  }
+
+  /* Focus states */
+  :focus-visible {
+    @apply outline-none ring-2 ring-offset-2 ring-offset-background;
+    ring-color: hsl(var(--nexify-primary));
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
-/* View Transition Wave Effect */
+/* ============================================================
+   PREMIUM COMPONENTS
+   ============================================================ */
+
+@layer components {
+  /* --------------------------------------------------------
+     Premium Gradients
+     -------------------------------------------------------- */
+  .bg-gradient-premium {
+    background: var(--gradient-premium);
+  }
+
+  .bg-gradient-gold {
+    background: var(--gradient-gold);
+  }
+
+  .bg-gradient-royal {
+    background: var(--gradient-royal);
+  }
+
+  .text-gradient-premium {
+    background: var(--gradient-premium);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-gold {
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* --------------------------------------------------------
+     Premium Shadows
+     -------------------------------------------------------- */
+  .shadow-premium-sm {
+    box-shadow: var(--shadow-premium-sm);
+  }
+
+  .shadow-premium-md {
+    box-shadow: var(--shadow-premium-md);
+  }
+
+  .shadow-premium-lg {
+    box-shadow: var(--shadow-premium-lg);
+  }
+
+  .shadow-premium-xl {
+    box-shadow: var(--shadow-premium-xl);
+  }
+
+  .shadow-glow-primary {
+    box-shadow: var(--shadow-glow-primary);
+  }
+
+  .shadow-glow-gold {
+    box-shadow: var(--shadow-glow-gold);
+  }
+
+  /* --------------------------------------------------------
+     Premium Cards
+     -------------------------------------------------------- */
+  .card-premium {
+    @apply relative overflow-hidden rounded-xl;
+    @apply bg-card border border-border/50;
+    box-shadow: var(--shadow-premium-md);
+    transition: all var(--transition-normal) var(--ease-premium);
+  }
+
+  .card-premium:hover {
+    @apply border-primary/20;
+    box-shadow: var(--shadow-premium-lg);
+    transform: translateY(-2px);
+  }
+
+  .card-premium::before {
+    content: "";
+    @apply absolute inset-0 opacity-0;
+    background: linear-gradient(
+      135deg,
+      hsla(var(--nexify-primary), 0.03) 0%,
+      hsla(var(--nexify-gold), 0.02) 100%
+    );
+    transition: opacity var(--transition-normal) var(--ease-premium);
+  }
+
+  .card-premium:hover::before {
+    @apply opacity-100;
+  }
+
+  /* Gold accent card */
+  .card-gold {
+    @apply card-premium;
+    border-color: hsla(var(--nexify-gold), 0.2);
+  }
+
+  .card-gold:hover {
+    border-color: hsla(var(--nexify-gold), 0.4);
+    box-shadow: var(--shadow-glow-gold);
+  }
+
+  /* --------------------------------------------------------
+     Premium Buttons
+     -------------------------------------------------------- */
+  .btn-premium {
+    @apply relative inline-flex items-center justify-center;
+    @apply px-6 py-3 rounded-lg font-semibold;
+    @apply text-white;
+    background: var(--gradient-royal);
+    box-shadow: var(--shadow-premium-md);
+    transition: all var(--transition-normal) var(--ease-premium);
+    overflow: hidden;
+  }
+
+  .btn-premium::before {
+    content: "";
+    @apply absolute inset-0;
+    background: linear-gradient(
+      135deg,
+      hsla(0, 0%, 100%, 0.1) 0%,
+      hsla(0, 0%, 100%, 0) 50%,
+      hsla(0, 0%, 0%, 0.1) 100%
+    );
+  }
+
+  .btn-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow-primary);
+  }
+
+  .btn-premium:active {
+    transform: translateY(0);
+  }
+
+  /* Gold button */
+  .btn-gold {
+    @apply btn-premium;
+    background: var(--gradient-gold);
+    @apply text-black;
+  }
+
+  .btn-gold:hover {
+    box-shadow: var(--shadow-glow-gold);
+  }
+
+  /* Outline premium button */
+  .btn-premium-outline {
+    @apply relative inline-flex items-center justify-center;
+    @apply px-6 py-3 rounded-lg font-semibold;
+    @apply bg-transparent;
+    border: 2px solid hsl(var(--nexify-primary));
+    color: hsl(var(--nexify-primary));
+    transition: all var(--transition-normal) var(--ease-premium);
+  }
+
+  .btn-premium-outline:hover {
+    @apply text-white;
+    background: var(--gradient-royal);
+    box-shadow: var(--shadow-glow-primary);
+    transform: translateY(-2px);
+  }
+
+  /* --------------------------------------------------------
+     Premium Glass Effect
+     -------------------------------------------------------- */
+  .glass-premium {
+    @apply backdrop-blur-xl;
+    background: hsla(var(--background), 0.8);
+    border: 1px solid hsla(var(--border), 0.5);
+    box-shadow: var(--shadow-premium-md);
+  }
+
+  .dark .glass-premium {
+    background: hsla(222, 47%, 8%, 0.85);
+    border-color: hsla(222, 47%, 20%, 0.5);
+  }
+
+  /* --------------------------------------------------------
+     Premium Badge
+     -------------------------------------------------------- */
+  .badge-premium {
+    @apply inline-flex items-center px-3 py-1;
+    @apply text-xs font-semibold rounded-full;
+    @apply text-white;
+    background: var(--gradient-royal);
+  }
+
+  .badge-gold {
+    @apply inline-flex items-center px-3 py-1;
+    @apply text-xs font-semibold rounded-full;
+    background: var(--gradient-gold);
+    @apply text-black;
+  }
+
+  /* --------------------------------------------------------
+     Premium Input
+     -------------------------------------------------------- */
+  .input-premium {
+    @apply w-full px-4 py-3 rounded-lg;
+    @apply bg-background border border-border;
+    @apply text-foreground placeholder:text-muted-foreground;
+    box-shadow: var(--shadow-premium-sm);
+    transition: all var(--transition-normal) var(--ease-premium);
+  }
+
+  .input-premium:focus {
+    @apply border-primary outline-none;
+    box-shadow: var(--shadow-glow-primary);
+  }
+
+  /* --------------------------------------------------------
+     Premium Divider
+     -------------------------------------------------------- */
+  .divider-premium {
+    @apply relative h-px w-full;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(var(--border)) 20%,
+      hsl(var(--nexify-gold)) 50%,
+      hsl(var(--border)) 80%,
+      transparent 100%
+    );
+  }
+
+  /* --------------------------------------------------------
+     Animated Gradient Border
+     -------------------------------------------------------- */
+  .border-gradient-animated {
+    @apply relative rounded-xl overflow-hidden;
+    padding: 2px;
+    background: linear-gradient(
+      90deg,
+      hsl(var(--nexify-primary)),
+      hsl(var(--nexify-gold)),
+      hsl(var(--nexify-primary))
+    );
+    background-size: 200% 100%;
+    animation: gradient-shift 3s ease infinite;
+  }
+
+  .border-gradient-animated > * {
+    @apply rounded-[10px] bg-background;
+  }
+
+  @keyframes gradient-shift {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* --------------------------------------------------------
+     Premium Glow Text
+     -------------------------------------------------------- */
+  .text-glow {
+    text-shadow: 0 0 20px hsla(var(--nexify-primary), 0.5);
+  }
+
+  .text-glow-gold {
+    text-shadow: 0 0 20px hsla(var(--nexify-gold), 0.5);
+  }
+
+  /* --------------------------------------------------------
+     Premium Hover Effects
+     -------------------------------------------------------- */
+  .hover-lift {
+    transition:
+      transform var(--transition-normal) var(--ease-premium),
+      box-shadow var(--transition-normal) var(--ease-premium);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-premium-lg);
+  }
+
+  .hover-glow {
+    transition: box-shadow var(--transition-normal) var(--ease-premium);
+  }
+
+  .hover-glow:hover {
+    box-shadow: var(--shadow-glow-primary);
+  }
+
+  .hover-glow-gold:hover {
+    box-shadow: var(--shadow-glow-gold);
+  }
+
+  /* --------------------------------------------------------
+     Premium Section Headers
+     -------------------------------------------------------- */
+  .section-header-premium {
+    @apply relative inline-block;
+  }
+
+  .section-header-premium::after {
+    content: "";
+    @apply absolute -bottom-2 left-0 w-1/3 h-1;
+    background: var(--gradient-gold);
+    @apply rounded-full;
+  }
+
+  /* --------------------------------------------------------
+     Premium Loading States
+     -------------------------------------------------------- */
+  .skeleton-premium {
+    @apply animate-pulse rounded;
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsla(var(--muted-foreground), 0.1) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease infinite;
+  }
+
+  @keyframes skeleton-shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* --------------------------------------------------------
+     Premium Scrollbar
+     -------------------------------------------------------- */
+  .scrollbar-premium {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--nexify-primary)) transparent;
+  }
+
+  .scrollbar-premium::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-premium::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .scrollbar-premium::-webkit-scrollbar-thumb {
+    @apply rounded-full;
+    background: hsla(var(--nexify-primary), 0.3);
+    transition: background var(--transition-fast);
+  }
+
+  .scrollbar-premium::-webkit-scrollbar-thumb:hover {
+    background: hsla(var(--nexify-primary), 0.5);
+  }
+
+  /* --------------------------------------------------------
+     Premium Tooltips
+     -------------------------------------------------------- */
+  [data-tooltip-premium] {
+    @apply relative;
+  }
+
+  [data-tooltip-premium]::after {
+    content: attr(data-tooltip-premium);
+    @apply absolute bottom-full left-1/2 -translate-x-1/2 mb-2;
+    @apply px-3 py-1.5 rounded-lg text-xs font-medium;
+    @apply text-white whitespace-nowrap;
+    @apply opacity-0 pointer-events-none;
+    background: var(--gradient-royal);
+    box-shadow: var(--shadow-premium-md);
+    transition: all var(--transition-fast) var(--ease-premium);
+    transform: translateX(-50%) translateY(4px);
+  }
+
+  [data-tooltip-premium]:hover::after {
+    @apply opacity-100;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ============================================================
+   PREMIUM UTILITIES
+   ============================================================ */
+
+@layer utilities {
+  /* Premium text colors */
+  .text-premium-primary {
+    color: hsl(var(--nexify-primary));
+  }
+
+  .text-premium-gold {
+    color: hsl(var(--nexify-gold));
+  }
+
+  .text-premium-silver {
+    color: hsl(var(--nexify-silver));
+  }
+
+  /* Premium backgrounds */
+  .bg-premium-primary {
+    background-color: hsl(var(--nexify-primary));
+  }
+
+  .bg-premium-gold {
+    background-color: hsl(var(--nexify-gold));
+  }
+
+  .bg-premium-dark {
+    background-color: hsl(224 71% 4%);
+  }
+
+  /* Premium borders */
+  .border-premium-primary {
+    border-color: hsl(var(--nexify-primary));
+  }
+
+  .border-premium-gold {
+    border-color: hsl(var(--nexify-gold));
+  }
+
+  /* Noise texture overlay for depth */
+  .texture-noise {
+    position: relative;
+  }
+
+  .texture-noise::before {
+    content: "";
+    @apply absolute inset-0 pointer-events-none opacity-[0.02];
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+
+  .dark .texture-noise::before {
+    @apply opacity-[0.03];
+  }
+}
+
+/* ============================================================
+   VIEW TRANSITIONS - Premium
+   ============================================================ */
+
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
@@ -92,29 +753,42 @@
 }
 
 ::view-transition-old(root) {
-  /* Ensure the outgoing view (old theme) is beneath */
   z-index: 0;
 }
 
 ::view-transition-new(root) {
-  /* Ensure the incoming view (new theme) is always on top */
   z-index: 1;
+  animation: premium-reveal 0.5s var(--ease-elegant) forwards;
 }
 
-@keyframes reveal {
+@keyframes premium-reveal {
   from {
-    /* Use CSS variables for the origin, defaulting to center if not set */
     clip-path: circle(0% at var(--x, 50%) var(--y, 50%));
-    opacity: 0.7;
+    opacity: 0.8;
   }
   to {
-    /* Use CSS variables for the origin, defaulting to center if not set */
     clip-path: circle(150% at var(--x, 50%) var(--y, 50%));
     opacity: 1;
   }
 }
 
-::view-transition-new(root) {
-  /* Apply the reveal animation */
-  animation: reveal 0.4s ease-in-out forwards;
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+
+@media print {
+  .btn-premium,
+  .btn-gold,
+  .card-premium {
+    box-shadow: none !important;
+    background: white !important;
+    border: 1px solid #e5e7eb !important;
+  }
+
+  .text-gradient-premium,
+  .text-gradient-gold {
+    -webkit-text-fill-color: initial !important;
+    background: none !important;
+    color: #1e3a5f !important;
+  }
 }

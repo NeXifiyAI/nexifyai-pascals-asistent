@@ -64,6 +64,11 @@ npm run dev
 npm run build
 ```
 
+## ✅ Tests & CI
+
+- Lokal: `pnpm --filter nexify-ai-dashboard test` führt alle `tsx`-basierten Unit- und Smoke-Tests im Dashboard-Neu-Projekt aus.
+- CI: `.github/workflows/dashboard-new-tests.yml` wird bei jedem Push/PR ausgeführt und stellt sicher, dass die Tests unter Node 20 + pnpm 9 laufen.
+
 ## 🔧 Verfügbare Tools
 
 ### AI Provider Tools

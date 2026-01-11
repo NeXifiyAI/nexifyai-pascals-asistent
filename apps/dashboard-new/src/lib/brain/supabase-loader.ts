@@ -87,8 +87,8 @@ export class BrainLoader {
   private projectId: string;
   private embeddingModel = "text-embedding-ada-002";
 
-  constructor(projectId: string = "nexify-ai") {
-    this.supabase = getSupabaseClient();
+  constructor(projectId: string = "nexify-ai", supabase?: SupabaseClient) {
+    this.supabase = supabase ?? getSupabaseClient();
     this.projectId = projectId;
   }
 

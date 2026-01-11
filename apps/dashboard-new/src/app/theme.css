@@ -1,3 +1,8 @@
+/* ============================================================
+   NEXIFY AI - PREMIUM THEME VARIANTS
+   Refined color schemes for different contexts
+   ============================================================ */
+
 body {
   @apply overscroll-none bg-transparent;
 }
@@ -7,24 +12,119 @@ body {
   --header-height: calc(var(--spacing) * 12 + 1px);
 }
 
-.theme-scaled {
+/* ============================================================
+   THEME: NEXIFY PREMIUM (Default)
+   Royal Blue + Gold - Elegant & Professional
+   ============================================================ */
+
+.theme-nexify,
+.theme-nexify-scaled {
+  /* Primary: Royal Blue */
+  --primary: 224 76% 48%;
+  --primary-foreground: 0 0% 100%;
+
+  /* Accent: Gold */
+  --accent: 45 93% 47%;
+  --accent-foreground: 224 71% 4%;
+
+  /* Ring */
+  --ring: 224 76% 48%;
+
+  @variant dark {
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    --accent: 48 96% 53%;
+    --accent-foreground: 224 71% 4%;
+    --ring: 221 83% 53%;
+  }
+}
+
+/* ============================================================
+   THEME: NEXIFY DARK (Dashboard)
+   Deep backgrounds with vibrant accents
+   ============================================================ */
+
+.theme-nexify-dark,
+.theme-nexify-dark-scaled {
+  --background: 222 47% 6%;
+  --foreground: 220 13% 95%;
+  --card: 222 47% 8%;
+  --card-foreground: 220 13% 95%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 222 47% 12%;
+  --secondary-foreground: 220 13% 95%;
+  --muted: 222 47% 14%;
+  --muted-foreground: 220 9% 60%;
+  --accent: 48 96% 53%;
+  --accent-foreground: 224 71% 4%;
+  --border: 222 47% 16%;
+  --input: 222 47% 16%;
+  --ring: 221 83% 53%;
+
+  /* Sidebar - Slightly darker */
+  --sidebar: 222 47% 5%;
+  --sidebar-foreground: 220 13% 95%;
+  --sidebar-primary: 221 83% 53%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 222 47% 10%;
+  --sidebar-accent-foreground: 220 13% 95%;
+  --sidebar-border: 222 47% 14%;
+}
+
+/* ============================================================
+   THEME: NEXIFY LIGHT (Marketing)
+   Clean, bright, professional
+   ============================================================ */
+
+.theme-nexify-light,
+.theme-nexify-light-scaled {
+  --background: 220 33% 98%;
+  --foreground: 224 71% 4%;
+  --card: 0 0% 100%;
+  --card-foreground: 224 71% 4%;
+  --primary: 224 76% 48%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 220 14% 96%;
+  --secondary-foreground: 220 9% 26%;
+  --muted: 220 14% 96%;
+  --muted-foreground: 220 9% 46%;
+  --accent: 45 93% 47%;
+  --accent-foreground: 224 71% 4%;
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 224 76% 48%;
+}
+
+/* ============================================================
+   SCALED THEME (Compact UI)
+   ============================================================ */
+
+.theme-scaled,
+.theme-nexify-scaled,
+.theme-nexify-dark-scaled,
+.theme-nexify-light-scaled {
   @media (min-width: 1024px) {
     --radius: 0.6rem;
     --text-lg: 1.05rem;
-    --text-base: 0.85rem;
+    --text-base: 0.875rem;
     --text-sm: 0.8rem;
     --spacing: 0.222222rem;
   }
 
-  [data-slot='card'] {
+  [data-slot="card"] {
     --spacing: 0.16rem;
   }
 
-  [data-slot='select-trigger'],
-  [data-slot='toggle-group-item'] {
+  [data-slot="select-trigger"],
+  [data-slot="toggle-group-item"] {
     --spacing: 0.222222rem;
   }
 }
+
+/* ============================================================
+   LEGACY THEMES (Compatibility)
+   ============================================================ */
 
 .theme-default,
 .theme-default-scaled {
@@ -39,34 +139,34 @@ body {
 
 .theme-blue,
 .theme-blue-scaled {
-  --primary: var(--color-blue-600);
-  --primary-foreground: var(--color-blue-50);
+  --primary: 224 76% 48%;
+  --primary-foreground: 0 0% 100%;
 
   @variant dark {
-    --primary: var(--color-blue-500);
-    --primary-foreground: var(--color-blue-50);
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
   }
 }
 
 .theme-green,
 .theme-green-scaled {
-  --primary: var(--color-lime-600);
-  --primary-foreground: var(--color-lime-50);
+  --primary: 158 64% 42%;
+  --primary-foreground: 0 0% 100%;
 
   @variant dark {
-    --primary: var(--color-lime-600);
-    --primary-foreground: var(--color-lime-50);
+    --primary: 158 64% 52%;
+    --primary-foreground: 0 0% 100%;
   }
 }
 
 .theme-amber,
 .theme-amber-scaled {
-  --primary: var(--color-amber-600);
-  --primary-foreground: var(--color-amber-50);
+  --primary: 45 93% 47%;
+  --primary-foreground: 224 71% 4%;
 
   @variant dark {
-    --primary: var(--color-amber-500);
-    --primary-foreground: var(--color-amber-50);
+    --primary: 48 96% 53%;
+    --primary-foreground: 224 71% 4%;
   }
 }
 
@@ -98,8 +198,8 @@ body {
     @apply !shadow-none;
   }
 
-  [data-slot='toggle-group'],
-  [data-slot='toggle-group-item'] {
+  [data-slot="toggle-group"],
+  [data-slot="toggle-group-item"] {
     @apply !rounded-none !shadow-none;
   }
 }
